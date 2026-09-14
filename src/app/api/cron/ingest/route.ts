@@ -7,8 +7,8 @@ import { Topic } from '@/lib/types'
 
 const parser = new Parser()
 
-const SCORE_THRESHOLD = 15
-const MIN_WORDS = 500
+const SCORE_THRESHOLD = 8
+const MIN_WORDS = 300
 const MAX_WORDS = 2500
 
 // Topic rotation: what topic should today be?
