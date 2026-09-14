@@ -18,12 +18,19 @@ function VocabWord({ word, definition, defaultOpen = false }: {
   definition: string
   defaultOpen?: boolean
 }) {
-  const [open, setOpen] = useState(defaultOpen)
+  const [open, setOpen] = useState(false)
+  // Only pre-open on desktop (pointer: fine = mouse device)
+  useState(() => {
+    if (defaultOpen && typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
+      setOpen(true)
+    }
+  })
   return (
     <span
       className="relative inline"
       onMouseEnter={() => setOpen(true)}
       onMouseLeave={() => setOpen(false)}
+      onClick={() => setOpen(o => !o)}
     >
       <mark className="bg-amber-100 text-amber-900 px-0.5 rounded cursor-help border-b border-dashed border-amber-400">
         {word}
@@ -346,7 +353,7 @@ export default function Home() {
 
           {/* Social proof avatars */}
           <div className="mb-6 border-y [border-image:linear-gradient(to_right,transparent,rgb(203_213_225_/_0.8),transparent)_1]">
-            <div className="py-3 flex items-center justify-center gap-2">
+            <div className="py-3 flex flex-col sm:flex-row items-center justify-center gap-2">
               <div className="-space-x-2 flex">
                 {AVATARS.map(({ seed, bg }) => (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -367,12 +374,12 @@ export default function Home() {
           </div>
 
           {/* Headline with gradient borders */}
-          <h1 className="mb-5 border-y text-5xl sm:text-6xl font-serif font-bold text-gray-900 leading-tight
+          <h1 className="mb-5 border-y text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-gray-900 leading-tight
             [border-image:linear-gradient(to_right,transparent,rgb(203_213_225_/_0.8),transparent)_1] py-4 max-w-3xl mx-auto">
-            Read like the GRE<br className="hidden sm:block" /> expects you to.
+            Read like the GRE expects you to.
           </h1>
 
-          <p className="text-gray-500 text-lg leading-relaxed max-w-xl mx-auto mb-8">
+          <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-xl mx-auto mb-6">
             One article per day from ETS-recommended sources. GRE vocabulary in context.
             Comprehension questions built in. Free, forever.
           </p>
@@ -387,7 +394,7 @@ export default function Home() {
         <section className="border-y border-gray-100 bg-white py-5">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <p className="text-center text-xs tracking-widest uppercase text-gray-400 mb-4">Articles sourced from</p>
-            <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
+            <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-x-8 gap-y-3">
               {SOURCES.map(s => (
                 <div key={s.name} className="flex items-center gap-2">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -407,26 +414,28 @@ export default function Home() {
         </section>
 
         {/* How it works */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-16">
-          <div className="text-center mb-12">
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
+          <div className="text-center mb-8 sm:mb-12">
             <p className="text-xs tracking-widest uppercase text-gray-400 mb-2">How it works</p>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900">
+            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-gray-900">
               Three steps. Five minutes a day.
             </h2>
           </div>
-          <div className="grid sm:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
             {STEPS.map(step => (
-              <div key={step.number}>
-                <p className="font-serif text-5xl font-bold text-gray-100 mb-3 leading-none">{step.number}</p>
-                <h3 className="font-serif text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{step.body}</p>
+              <div key={step.number} className="flex sm:block gap-4 items-start">
+                <p className="font-serif text-3xl sm:text-5xl font-bold text-gray-100 sm:mb-3 leading-none shrink-0">{step.number}</p>
+                <div>
+                  <h3 className="font-serif text-base sm:text-lg font-bold text-gray-900 mb-1">{step.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{step.body}</p>
+                </div>
               </div>
             ))}
           </div>
         </section>
 
         {/* Sample preview */}
-        <section className="bg-white border-y border-gray-100 py-16">
+        <section className="bg-white border-y border-gray-100 py-10 sm:py-16">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-10">
               <p className="text-xs tracking-widest uppercase text-gray-400 mb-2">Live preview</p>
@@ -434,7 +443,7 @@ export default function Home() {
                 This is what lands in your inbox.
               </h2>
               <p className="text-gray-500 text-sm">
-                Hover the highlighted words for definitions. Try the questions below.
+                Tap the highlighted words for definitions. Try the questions below.
               </p>
             </div>
             <div className="max-w-2xl mx-auto">
@@ -444,7 +453,7 @@ export default function Home() {
         </section>
 
         {/* USPs — dark section like Cruip features grid */}
-        <section className="relative bg-gray-900 py-16">
+        <section className="relative bg-gray-900 py-10 sm:py-16">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-12">
               <p className="text-xs tracking-widest uppercase text-blue-400 mb-2">Why Greheads</p>
@@ -465,7 +474,7 @@ export default function Home() {
         </section>
 
         {/* Bottom CTA */}
-        <section className="py-16 px-4">
+        <section className="py-10 sm:py-16 px-4">
           <div className="max-w-xl mx-auto text-center">
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
               Build the habit before test day.
