@@ -3,7 +3,9 @@ import { Resend } from 'resend'
 import { supabaseAdmin } from '@/lib/supabase'
 import { Article } from '@/lib/types'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 function difficultyLabel(n: number): string {
   return ['', 'Introductory', 'Easy', 'Moderate', 'Hard', 'Advanced'][n] || 'Moderate'
@@ -95,7 +97,7 @@ export async function GET(req: NextRequest) {
 
   const batchSize = 50
   for (let i = 0; i < emails.length; i += batchSize) {
-    await resend.batch.send(emails.slice(i, i + batchSize))
+    await getResend().batch.send(emails.slice(i, i + batchSize))
   }
 
   // Mark article as sent

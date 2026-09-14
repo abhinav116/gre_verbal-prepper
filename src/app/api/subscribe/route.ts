@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabase'
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+function getResend() {
+  return new Resend(process.env.RESEND_API_KEY)
+}
 
 export async function POST(req: NextRequest) {
   const { email } = await req.json()
@@ -24,7 +26,7 @@ export async function POST(req: NextRequest) {
 
   const confirmUrl = `${process.env.NEXT_PUBLIC_BASE_URL}/confirm?token=${data.confirmation_token}`
 
-  await resend.emails.send({
+  await getResend().emails.send({
     from: 'GRE Verbal Prepper <hello@yourverifieddomain.com>',
     to: email,
     subject: 'Confirm your subscription',

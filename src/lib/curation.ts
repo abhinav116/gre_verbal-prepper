@@ -1,7 +1,9 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { Topic, GREVocab, MCQQuestion } from './types'
 
-const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+function getAnthropic() {
+  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+}
 
 export interface ScoredArticle {
   title: string
@@ -104,7 +106,7 @@ Return ONLY valid JSON, no markdown:
 
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const message = await anthropic.messages.create({
+    const message = await getAnthropic().messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 300,
       messages: [{ role: 'user', content: SCORE_PROMPT(article) }],
@@ -120,7 +122,7 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
 
 export async function enrichArticle(article: ScoredArticle, score: number, topic: Topic): Promise<EnrichedArticle | null> {
   try {
-    const message = await anthropic.messages.create({
+    const message = await getAnthropic().messages.create({
       model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       messages: [{ role: 'user', content: ENRICH_PROMPT(article, topic) }],
