@@ -143,25 +143,20 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
 }
 
 export async function enrichArticle(article: ScoredArticle, score: number, topic: Topic): Promise<EnrichedArticle | null> {
-  try {
-    const text = await groqChat('openai/gpt-oss-120b', ENRICH_PROMPT(article, topic), 3000)
-    const parsed = parseJSON(text)
+  const text = await groqChat('openai/gpt-oss-120b', ENRICH_PROMPT(article, topic), 3000)
+  const parsed = parseJSON(text)
 
-    return {
-      title: article.title,
-      source: article.source,
-      url: article.url,
-      excerpt: parsed.excerpt,
-      topic: parsed.topic,
-      difficulty: parsed.difficulty,
-      reading_time: parsed.reading_time,
-      gre_vocab: parsed.gre_vocab,
-      questions: parsed.questions,
-      score,
-      published_at: article.published_at,
-    }
-  } catch (err) {
-    console.error('enrichArticle failed:', article.title, err)
-    return null
+  return {
+    title: article.title,
+    source: article.source,
+    url: article.url,
+    excerpt: parsed.excerpt,
+    topic: parsed.topic,
+    difficulty: Math.round(parsed.difficulty),
+    reading_time: Math.round(parsed.reading_time),
+    gre_vocab: parsed.gre_vocab,
+    questions: parsed.questions,
+    score,
+    published_at: article.published_at,
   }
 }
