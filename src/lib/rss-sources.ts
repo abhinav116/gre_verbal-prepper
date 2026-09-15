@@ -1,43 +1,45 @@
 export interface RSSSource {
   name: string
-  url: string
-  topic_hint: string // default topic if Claude can't determine
+  rssUrl: string
+  domain: string
+  topic_hint: string
 }
 
 export const RSS_SOURCES: RSSSource[] = [
   {
-    name: 'The Economist',
-    url: 'https://www.economist.com/rss/the_world_this_week',
-    topic_hint: 'Business',
-  },
-  {
-    name: 'Scientific American',
-    url: 'https://www.scientificamerican.com/feed/rss/',
-    topic_hint: 'Science',
-  },
-  {
-    name: 'The Atlantic',
-    url: 'https://feeds.feedburner.com/TheAtlantic',
+    name: 'Aeon',
+    rssUrl: 'https://aeon.co/feed.rss',
+    domain: 'aeon.co',
     topic_hint: 'Humanities',
   },
   {
-    name: 'Nature News',
-    url: 'https://www.nature.com/nature.rss',
+    name: 'Quanta Magazine',
+    rssUrl: 'https://api.quantamagazine.org/feed/',
+    domain: 'quantamagazine.org',
     topic_hint: 'Science',
   },
   {
-    name: 'Foreign Affairs',
-    url: 'https://www.foreignaffairs.com/rss.xml',
-    topic_hint: 'Social Science',
+    name: 'Nautilus',
+    rssUrl: 'https://nautil.us/feed/',
+    domain: 'nautil.us',
+    topic_hint: 'Science',
   },
   {
     name: 'Smithsonian Magazine',
-    url: 'https://www.smithsonianmag.com/rss/latest-articles-from-smithsoniancom/',
+    rssUrl: 'https://www.smithsonianmag.com/rss/latest-articles-from-smithsoniancom/',
+    domain: 'smithsonianmag.com',
     topic_hint: 'Humanities',
   },
   {
-    name: 'Aeon',
-    url: 'https://aeon.co/feed.rss',
+    name: 'The Conversation',
+    rssUrl: 'https://theconversation.com/us/articles.atom',
+    domain: 'theconversation.com',
+    topic_hint: 'Social Science',
+  },
+  {
+    name: 'The Atlantic',
+    rssUrl: 'https://feeds.feedburner.com/TheAtlantic',
+    domain: 'theatlantic.com',
     topic_hint: 'Humanities',
   },
 ]

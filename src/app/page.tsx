@@ -73,13 +73,12 @@ function renderExcerpt(text: string, vocab: { word: string; definition: string }
 }
 
 const SOURCES = [
-  { name: 'The Economist',       domain: 'economist.com' },
-  { name: 'Scientific American', domain: 'scientificamerican.com' },
-  { name: 'The Atlantic',        domain: 'theatlantic.com' },
-  { name: 'Nature',              domain: 'nature.com' },
-  { name: 'Foreign Affairs',     domain: 'foreignaffairs.com' },
-  { name: 'Smithsonian',         domain: 'smithsonianmag.com' },
   { name: 'Aeon',                domain: 'aeon.co' },
+  { name: 'Quanta Magazine',     domain: 'quantamagazine.org' },
+  { name: 'Nautilus',            domain: 'nautil.us' },
+  { name: 'Smithsonian',         domain: 'smithsonianmag.com' },
+  { name: 'The Conversation',    domain: 'theconversation.com' },
+  { name: 'The Atlantic',        domain: 'theatlantic.com' },
 ]
 
 const STEPS = [
