@@ -127,7 +127,7 @@ async function groqChat(model: string, prompt: string, maxTokens: number): Promi
 
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const text = await groqChat('llama-3.1-8b-instant', SCORE_PROMPT(article), 300)
+    const text = await groqChat('llama-3.3-70b-versatile', SCORE_PROMPT(article), 300)
     const parsed = parseJSON(text)
     return { score: parsed.total_score, topic: parsed.topic as Topic }
   } catch (err) {
