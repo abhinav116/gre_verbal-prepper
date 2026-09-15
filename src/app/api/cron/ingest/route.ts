@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import Parser from 'rss-parser'
-import { JSDOM } from 'jsdom'
-import { Readability } from '@mozilla/readability'
+import * as cheerio from 'cheerio'
 import { supabaseAdmin } from '@/lib/supabase'
 import { RSS_SOURCES, LISTICLE_PATTERNS } from '@/lib/rss-sources'
 import { scoreArticle, enrichArticle, ScoredArticle } from '@/lib/curation'
@@ -49,9 +48,20 @@ async function fetchFullText(url: string): Promise<string | null> {
     })
     if (!res.ok) return null
     const html = await res.text()
-    const dom = new JSDOM(html, { url })
-    const article = new Readability(dom.window.document).parse()
-    return article?.textContent || null
+    const $ = cheerio.load(html)
+
+    // Remove noise elements
+    $('script, style, nav, header, footer, aside, .ad, .advertisement, .sidebar, .menu, .comments').remove()
+
+    // Extract paragraphs with substantial content
+    const paragraphs: string[] = []
+    $('p').each((_, el) => {
+      const text = $(el).text().trim()
+      if (text.length > 60) paragraphs.push(text)
+    })
+
+    const content = paragraphs.join('\n\n')
+    return content.length > 200 ? content : null
   } catch {
     return null
   }
