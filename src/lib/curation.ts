@@ -121,7 +121,8 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
     const text = (message.content[0] as { type: string; text: string }).text
     const parsed = parseJSON(text)
     return { score: parsed.total_score, topic: parsed.topic as Topic }
-  } catch {
+  } catch (err) {
+    console.error('scoreArticle failed:', article.title, err)
     return null
   }
 }

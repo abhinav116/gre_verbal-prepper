@@ -123,8 +123,11 @@ export async function GET(_req: NextRequest) {
 
   // Score with Claude Haiku — limit to 15 to avoid Vercel timeout
   const scored: Array<{ article: ScoredArticle; score: number; topic: Topic }> = []
+  const scoreLog: Array<{ title: string; score: number | null; error: boolean }> = []
+
   for (const candidate of candidates.slice(0, 15)) {
     const result = await scoreArticle(candidate)
+    scoreLog.push({ title: candidate.title, score: result?.score ?? null, error: result === null })
     if (!result || result.score < SCORE_THRESHOLD) continue
     scored.push({ article: candidate, score: result.score, topic: result.topic })
   }
@@ -134,6 +137,7 @@ export async function GET(_req: NextRequest) {
       message: 'No articles passed score threshold',
       candidates_found: candidates.length,
       threshold: SCORE_THRESHOLD,
+      score_log: scoreLog,
       debug,
     })
   }
