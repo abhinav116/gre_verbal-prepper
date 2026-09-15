@@ -154,7 +154,8 @@ export async function enrichArticle(article: ScoredArticle, score: number, topic
       score,
       published_at: article.published_at,
     }
-  } catch {
+  } catch (err) {
+    console.error('enrichArticle failed:', article.title, err)
     return null
   }
 }
