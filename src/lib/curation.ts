@@ -100,7 +100,13 @@ Return ONLY valid JSON, no markdown:
 `
 
 function parseJSON(text: string) {
-  const clean = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim()
+  // Strip reasoning tags (chain-of-thought models)
+  let clean = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
+  // Strip markdown code fences
+  clean = clean.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim()
+  // Extract first JSON object if there's surrounding text
+  const match = clean.match(/\{[\s\S]*\}/)
+  if (match) clean = match[0]
   return JSON.parse(clean)
 }
 
