@@ -127,7 +127,7 @@ async function groqChat(model: string, prompt: string, maxTokens: number): Promi
 
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const text = await groqChat('openai/gpt-oss-20b', SCORE_PROMPT(article), 300)
+    const text = await groqChat('openai/gpt-oss-20b', SCORE_PROMPT(article), 600)
     const parsed = parseJSON(text)
     return { score: parsed.total_score, topic: parsed.topic as Topic }
   } catch (err) {
@@ -138,7 +138,7 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
 
 export async function enrichArticle(article: ScoredArticle, score: number, topic: Topic): Promise<EnrichedArticle | null> {
   try {
-    const text = await groqChat('openai/gpt-oss-120b', ENRICH_PROMPT(article, topic), 1500)
+    const text = await groqChat('openai/gpt-oss-120b', ENRICH_PROMPT(article, topic), 3000)
     const parsed = parseJSON(text)
 
     return {
