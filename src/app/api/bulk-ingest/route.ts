@@ -110,14 +110,20 @@ export async function GET(req: NextRequest) {
   const toEnrich = scored.slice(0, ENRICH_LIMIT)
 
   const stored: Array<{ title: string; topic: Topic; score: number }> = []
-  const failed: string[] = []
+  const failed: Array<{ title: string; reason: string }> = []
 
   for (const { article, score, topic } of toEnrich) {
-    const enriched = await enrichArticle(article, score, topic)
-    if (!enriched) { failed.push(article.title); continue }
+    let enriched
+    try {
+      enriched = await enrichArticle(article, score, topic)
+    } catch (err) {
+      failed.push({ title: article.title, reason: String(err) })
+      continue
+    }
+    if (!enriched) { failed.push({ title: article.title, reason: 'enrichArticle returned null' }); continue }
 
     const { error } = await supabaseAdmin.from('articles').insert(enriched)
-    if (error) { failed.push(article.title); continue }
+    if (error) { failed.push({ title: article.title, reason: error.message }); continue }
 
     stored.push({ title: enriched.title, topic: enriched.topic, score: enriched.score })
   }
@@ -127,6 +133,7 @@ export async function GET(req: NextRequest) {
     stored: stored.length,
     failed: failed.length,
     articles: stored,
+    failures: failed,
     candidates_found: candidates.length,
     next_offset: offset + SCORE_LIMIT,
   })
