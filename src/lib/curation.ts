@@ -104,6 +104,12 @@ Return ONLY valid JSON, no markdown:
 }
 `
 
+function parseJSON(text: string) {
+  // Strip markdown code fences if present
+  const clean = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim()
+  return JSON.parse(clean)
+}
+
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
     const message = await getAnthropic().messages.create({
@@ -113,7 +119,7 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
     })
 
     const text = (message.content[0] as { type: string; text: string }).text
-    const parsed = JSON.parse(text)
+    const parsed = parseJSON(text)
     return { score: parsed.total_score, topic: parsed.topic as Topic }
   } catch {
     return null
@@ -129,7 +135,7 @@ export async function enrichArticle(article: ScoredArticle, score: number, topic
     })
 
     const text = (message.content[0] as { type: string; text: string }).text
-    const parsed = JSON.parse(text)
+    const parsed = parseJSON(text)
 
     return {
       title: article.title,

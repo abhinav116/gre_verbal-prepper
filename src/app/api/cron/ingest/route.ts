@@ -121,9 +121,9 @@ export async function GET(_req: NextRequest) {
     return NextResponse.json({ message: 'No candidates found', debug })
   }
 
-  // Score with Claude Haiku
+  // Score with Claude Haiku — limit to 15 to avoid Vercel timeout
   const scored: Array<{ article: ScoredArticle; score: number; topic: Topic }> = []
-  for (const candidate of candidates) {
+  for (const candidate of candidates.slice(0, 15)) {
     const result = await scoreArticle(candidate)
     if (!result || result.score < SCORE_THRESHOLD) continue
     scored.push({ article: candidate, score: result.score, topic: result.topic })
