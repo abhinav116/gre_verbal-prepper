@@ -1,8 +1,8 @@
-import Anthropic from '@anthropic-ai/sdk'
+import Groq from 'groq-sdk'
 import { Topic, GREVocab, MCQQuestion } from './types'
 
-function getAnthropic() {
-  return new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+function getGroq() {
+  return new Groq({ apiKey: process.env.GROQ_API_KEY })
 }
 
 export interface ScoredArticle {
@@ -112,13 +112,13 @@ function parseJSON(text: string) {
 
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const message = await getAnthropic().messages.create({
-      model: 'claude-haiku-4-5-20251001',
+    const completion = await getGroq().chat.completions.create({
+      model: 'llama3-8b-8192',
       max_tokens: 300,
       messages: [{ role: 'user', content: SCORE_PROMPT(article) }],
     })
 
-    const text = (message.content[0] as { type: string; text: string }).text
+    const text = completion.choices[0]?.message?.content || ''
     const parsed = parseJSON(text)
     return { score: parsed.total_score, topic: parsed.topic as Topic }
   } catch (err) {
@@ -129,13 +129,13 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
 
 export async function enrichArticle(article: ScoredArticle, score: number, topic: Topic): Promise<EnrichedArticle | null> {
   try {
-    const message = await getAnthropic().messages.create({
-      model: 'claude-sonnet-4-6',
+    const completion = await getGroq().chat.completions.create({
+      model: 'llama-3.3-70b-versatile',
       max_tokens: 1500,
       messages: [{ role: 'user', content: ENRICH_PROMPT(article, topic) }],
     })
 
-    const text = (message.content[0] as { type: string; text: string }).text
+    const text = completion.choices[0]?.message?.content || ''
     const parsed = parseJSON(text)
 
     return {
