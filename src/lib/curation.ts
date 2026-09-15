@@ -1,9 +1,4 @@
-import Groq from 'groq-sdk'
 import { Topic, GREVocab, MCQQuestion } from './types'
-
-function getGroq() {
-  return new Groq({ apiKey: process.env.GROQ_API_KEY })
-}
 
 export interface ScoredArticle {
   title: string
@@ -105,20 +100,34 @@ Return ONLY valid JSON, no markdown:
 `
 
 function parseJSON(text: string) {
-  // Strip markdown code fences if present
   const clean = text.replace(/^```(?:json)?\n?/i, '').replace(/\n?```$/i, '').trim()
   return JSON.parse(clean)
 }
 
+async function groqChat(model: string, prompt: string, maxTokens: number): Promise<string> {
+  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model,
+      max_tokens: maxTokens,
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  })
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Groq API error ${res.status}: ${err}`)
+  }
+  const data = await res.json()
+  return data.choices[0]?.message?.content || ''
+}
+
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const completion = await getGroq().chat.completions.create({
-      model: 'llama3-8b-8192',
-      max_tokens: 300,
-      messages: [{ role: 'user', content: SCORE_PROMPT(article) }],
-    })
-
-    const text = completion.choices[0]?.message?.content || ''
+    const text = await groqChat('llama3-8b-8192', SCORE_PROMPT(article), 300)
     const parsed = parseJSON(text)
     return { score: parsed.total_score, topic: parsed.topic as Topic }
   } catch (err) {
@@ -129,13 +138,7 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
 
 export async function enrichArticle(article: ScoredArticle, score: number, topic: Topic): Promise<EnrichedArticle | null> {
   try {
-    const completion = await getGroq().chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
-      max_tokens: 1500,
-      messages: [{ role: 'user', content: ENRICH_PROMPT(article, topic) }],
-    })
-
-    const text = completion.choices[0]?.message?.content || ''
+    const text = await groqChat('llama-3.3-70b-versatile', ENRICH_PROMPT(article, topic), 1500)
     const parsed = parseJSON(text)
 
     return {
