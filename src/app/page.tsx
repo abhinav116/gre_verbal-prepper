@@ -286,6 +286,11 @@ function SamplePreview() {
 function SubscribeForm() {
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
+  const [subscribed, setSubscribed] = useState(false)
+
+  useEffect(() => {
+    setSubscribed(localStorage.getItem('greheads_sub') === '1')
+  }, [])
 
   async function subscribe(e: React.FormEvent) {
     e.preventDefault()
@@ -303,10 +308,16 @@ function SubscribeForm() {
     }
   }
 
-  if (status === 'success') return (
+  if (subscribed || status === 'success') return (
     <div className="text-center">
-      <p className="text-gray-900 text-sm font-medium">You&apos;re in.</p>
-      <p className="text-gray-500 text-sm mt-0.5">First edition coming soon. Check your inbox.</p>
+      <p className="text-gray-900 text-sm font-medium">You&apos;re subscribed.</p>
+      <p className="text-gray-500 text-sm mt-0.5 mb-4">Check your inbox every morning.</p>
+      <a
+        href="/articles"
+        className="inline-flex items-center gap-1 bg-gray-900 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors"
+      >
+        Browse the archive →
+      </a>
     </div>
   )
 
