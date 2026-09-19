@@ -14,7 +14,12 @@ export default function BottomSubscribeForm() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
     })
-    setStatus(res.ok ? 'success' : 'error')
+    if (res.ok) {
+      localStorage.setItem('greheads_sub', '1')
+      setStatus('success')
+    } else {
+      setStatus('error')
+    }
   }
 
   if (status === 'success') {
