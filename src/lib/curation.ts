@@ -120,7 +120,7 @@ function parseJSON(text: string) {
   }
 }
 
-async function groqChat(model: string, prompt: string, maxTokens: number): Promise<string> {
+async function groqChat(model: string, prompt: string, maxTokens: number, jsonMode = false): Promise<string> {
   const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
     method: 'POST',
     headers: {
@@ -131,6 +131,7 @@ async function groqChat(model: string, prompt: string, maxTokens: number): Promi
       model,
       max_tokens: maxTokens,
       messages: [{ role: 'user', content: prompt }],
+      ...(jsonMode ? { response_format: { type: 'json_object' } } : {}),
     }),
   })
   if (!res.ok) {
@@ -143,7 +144,7 @@ async function groqChat(model: string, prompt: string, maxTokens: number): Promi
 
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const text = await groqChat('groq/compound-mini', SCORE_PROMPT(article), 300)
+    const text = await groqChat('groq/compound-mini', SCORE_PROMPT(article), 300, true)
     const parsed = parseJSON(text)
     const score = (parsed.linguistic_difficulty || 0) + (parsed.gre_fit || 0) + (parsed.topic_suitability || 0)
     return { score, topic: parsed.topic as Topic }
@@ -154,7 +155,7 @@ export async function scoreArticle(article: ScoredArticle): Promise<{ score: num
 }
 
 export async function enrichArticle(article: ScoredArticle, score: number, topic: Topic): Promise<EnrichedArticle | null> {
-  const text = await groqChat('openai/gpt-oss-120b', ENRICH_PROMPT(article, topic), 3000)
+  const text = await groqChat('openai/gpt-oss-120b', ENRICH_PROMPT(article, topic), 3000, true)
   const parsed = parseJSON(text)
 
   return {
