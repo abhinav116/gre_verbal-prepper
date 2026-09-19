@@ -122,37 +122,29 @@ function ArticleGrid({ articles }: { articles: ArticleCard[] }) {
   return (
     <div>
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-8">
-        <div className="flex gap-1.5 flex-wrap">
-          {(['All', ...TOPICS] as const).map(t => (
-            <button
-              key={t}
-              onClick={() => setTopicFilter(t)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                topicFilter === t
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {t}
-            </button>
-          ))}
+      <div className="flex flex-wrap items-center gap-3 mb-8">
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-gray-400 font-medium whitespace-nowrap">Topic</label>
+          <select
+            value={topicFilter}
+            onChange={e => setTopicFilter(e.target.value as Topic | 'All')}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:border-gray-400 cursor-pointer"
+          >
+            <option value="All">All topics</option>
+            {TOPICS.map(t => <option key={t} value={t}>{t}</option>)}
+          </select>
         </div>
-        <div className="flex gap-1.5 flex-wrap">
-          {DIFFICULTIES.map(d => (
-            <button
-              key={d.value}
-              onClick={() => setDiffFilter(d.value)}
-              className={`px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${
-                diffFilter === d.value
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              {d.label}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <label className="text-xs text-gray-400 font-medium whitespace-nowrap">Difficulty</label>
+          <select
+            value={diffFilter}
+            onChange={e => setDiffFilter(Number(e.target.value))}
+            className="border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 bg-white focus:outline-none focus:border-gray-400 cursor-pointer"
+          >
+            {DIFFICULTIES.map(d => <option key={d.value} value={d.value}>{d.label}</option>)}
+          </select>
         </div>
+        <span className="text-xs text-gray-400 ml-auto">{filtered.length} article{filtered.length !== 1 ? 's' : ''}</span>
       </div>
 
       {filtered.length === 0 ? (
@@ -181,7 +173,6 @@ function ArticleGrid({ articles }: { articles: ArticleCard[] }) {
         </div>
       )}
 
-      <p className="text-gray-400 text-xs text-center mt-8">{filtered.length} article{filtered.length !== 1 ? 's' : ''}</p>
     </div>
   )
 }

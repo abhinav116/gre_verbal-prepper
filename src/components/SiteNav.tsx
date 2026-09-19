@@ -1,4 +1,14 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+
 export default function SiteNav() {
+  const [subscribed, setSubscribed] = useState(false)
+
+  useEffect(() => {
+    setSubscribed(localStorage.getItem('greheads_sub') === '1')
+  }, [])
+
   return (
     <div className="border-b border-gray-100 bg-[#faf9f6]/80 backdrop-blur sticky top-0 z-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
@@ -10,12 +20,14 @@ export default function SiteNav() {
           <a href="/articles" className="text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium">
             Archive
           </a>
-          <a
-            href="/#subscribe"
-            className="inline-flex items-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm"
-          >
-            Subscribe free →
-          </a>
+          {!subscribed && (
+            <a
+              href="/#subscribe"
+              className="inline-flex items-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm"
+            >
+              Subscribe free →
+            </a>
+          )}
         </div>
       </div>
     </div>
