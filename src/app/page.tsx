@@ -389,7 +389,7 @@ export default function Home() {
             Comprehension questions built in. Free, forever.
           </p>
 
-          <div id="subscribe" className="flex justify-center mb-3">
+          <div id="subscribe" className="flex justify-center mb-3 scroll-mt-24">
             <SubscribeForm />
           </div>
           <p className="text-gray-400 text-xs">No spam. Unsubscribe anytime.</p>
