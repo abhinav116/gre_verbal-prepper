@@ -128,7 +128,7 @@ async function groqChat(model: string, prompt: string, maxTokens: number): Promi
 
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const text = await groqChat('openai/gpt-oss-20b', SCORE_PROMPT(article), 200)
+    const text = await groqChat('openai/gpt-oss-120b', SCORE_PROMPT(article), 200)
     const parsed = parseJSON(text)
     const score = (parsed.linguistic_difficulty || 0) + (parsed.gre_fit || 0) + (parsed.topic_suitability || 0)
     return { score, topic: parsed.topic as Topic }
