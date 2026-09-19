@@ -12,7 +12,7 @@ const SCORE_THRESHOLD = 9
 const MIN_WORDS = 400
 const MAX_WORDS = 5000
 const SCORE_LIMIT = 5    // candidates to score per run
-const ENRICH_LIMIT = 5   // top articles to enrich and store per run
+const ENRICH_LIMIT = 1   // one enrichment per run (120b TPM limit is 8000)
 
 function wordCount(text: string): number {
   return text.trim().split(/\s+/).length
