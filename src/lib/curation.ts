@@ -102,7 +102,22 @@ function parseJSON(text: string) {
   // Extract first JSON object if there's surrounding text
   const match = clean.match(/\{[\s\S]*\}/)
   if (match) clean = match[0]
-  return JSON.parse(clean)
+
+  // First try direct parse
+  try {
+    return JSON.parse(clean)
+  } catch {
+    // Replace unescaped newlines inside JSON string values
+    const fixed = clean
+      .replace(/:\s*"([\s\S]*?)(?<!\\)"/g, (_, val) => {
+        const escaped = val
+          .replace(/\n/g, '\\n')
+          .replace(/\r/g, '\\r')
+          .replace(/\t/g, '\\t')
+        return `: "${escaped}"`
+      })
+    return JSON.parse(fixed)
+  }
 }
 
 async function groqChat(model: string, prompt: string, maxTokens: number): Promise<string> {
