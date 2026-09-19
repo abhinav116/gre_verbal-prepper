@@ -18,7 +18,6 @@ function VocabWord({ word, definition, defaultOpen = false }: {
   defaultOpen?: boolean
 }) {
   const [open, setOpen] = useState(false)
-  // Only pre-open on desktop (pointer: fine = mouse device)
   useState(() => {
     if (defaultOpen && typeof window !== 'undefined' && window.matchMedia('(pointer: fine)').matches) {
       setOpen(true)
@@ -38,7 +37,6 @@ function VocabWord({ word, definition, defaultOpen = false }: {
         <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 bg-gray-900 text-white text-xs rounded-xl px-3 py-2.5 z-20 shadow-xl pointer-events-none">
           <span className="font-semibold block text-amber-300 mb-0.5">{word}</span>
           {definition}
-          {/* Arrow */}
           <span className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-900" />
         </span>
       )}
@@ -47,21 +45,17 @@ function VocabWord({ word, definition, defaultOpen = false }: {
 }
 
 function renderExcerpt(text: string, vocab: { word: string; definition: string }[]) {
-  // Split text into segments: normal text and matched vocab words
   const pattern = vocab.map(v => v.word).join('|')
   const regex = new RegExp(`(${pattern})`, 'gi')
   const parts = text.split(regex)
-
   let vocabCount = 0
   return parts.map((part, i) => {
     const match = vocab.find(v => v.word.toLowerCase() === part.toLowerCase())
     if (match) {
-      // Pre-open the first vocab hit so the tooltip is visible on load
       const isFirst = vocabCount === 0
       vocabCount++
       return <VocabWord key={i} word={part} definition={match.definition} defaultOpen={isFirst} />
     }
-    // Preserve newlines
     return part.split('\n').map((line, j, arr) => (
       <span key={`${i}-${j}`}>
         {line}
@@ -72,12 +66,12 @@ function renderExcerpt(text: string, vocab: { word: string; definition: string }
 }
 
 const SOURCES = [
-  { name: 'Aeon',                domain: 'aeon.co' },
-  { name: 'Quanta Magazine',     domain: 'quantamagazine.org' },
-  { name: 'Nautilus',            domain: 'nautil.us' },
-  { name: 'Smithsonian',         domain: 'smithsonianmag.com' },
-  { name: 'The Conversation',    domain: 'theconversation.com' },
-  { name: 'The Atlantic',        domain: 'theatlantic.com' },
+  { name: 'Aeon',             domain: 'aeon.co' },
+  { name: 'Quanta Magazine',  domain: 'quantamagazine.org' },
+  { name: 'Nautilus',         domain: 'nautil.us' },
+  { name: 'Smithsonian',      domain: 'smithsonianmag.com' },
+  { name: 'The Conversation', domain: 'theconversation.com' },
+  { name: 'The Atlantic',     domain: 'theatlantic.com' },
 ]
 
 const STEPS = [
@@ -100,44 +94,49 @@ const STEPS = [
 
 const USPS = [
   {
+    accent: 'border-blue-500',
     icon: (
-      <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
+      <svg className="fill-blue-400" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
         <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0Zm0 14A6 6 0 1 1 8 2a6 6 0 0 1 0 12Zm1-7H7V5a1 1 0 1 0-2 0v3a1 1 0 0 0 1 1h3a1 1 0 1 0 0-2Z" />
       </svg>
     ),
     title: 'Context beats flashcards',
-    body: 'Seeing "obfuscate" in a real Economist sentence about Fed policy sticks far better than an Anki card. Every word is shown in the sentence it appeared in.',
+    body: 'Seeing "obfuscate" in a real sentence about Fed policy sticks far better than an Anki card. Every word is shown in the sentence it appeared in.',
   },
   {
+    accent: 'border-amber-500',
     icon: (
-      <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
+      <svg className="fill-amber-400" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
         <path d="M2 4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V4Zm2-4a4 4 0 0 0-4 4v8a4 4 0 0 0 4 4h8a4 4 0 0 0 4-4V4a4 4 0 0 0-4-4H4Zm1 10a1 1 0 1 0 0 2h6a1 1 0 1 0 0-2H5Z" />
       </svg>
     ),
     title: 'All four GRE passage types',
-    body: 'The GRE draws from Science, Humanities, Social Science, and Business. We rotate daily so you\'re never over-indexed on one domain come test day.',
+    body: 'The GRE draws from Science, Humanities, Social Science, and Business. We rotate daily so you\'re never over-indexed on one domain.',
   },
   {
+    accent: 'border-green-500',
     icon: (
-      <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
+      <svg className="fill-green-400" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
         <path d="M14.29 2.614a1 1 0 0 0-1.58-1.228L6.407 9.492l-3.199-3.2a1 1 0 1 0-1.414 1.415l4 4a1 1 0 0 0 1.496-.093l7-9ZM1 14a1 1 0 1 0 0 2h14a1 1 0 1 0 0-2H1Z" />
       </svg>
     ),
     title: 'GRE-style question types',
-    body: 'Not generic comprehension quizzes. Our questions test inference, main idea, author\'s purpose, and tone — the exact categories ETS uses.',
+    body: 'Not generic quizzes. Our questions test inference, main idea, author\'s purpose, and tone — the exact categories ETS uses.',
   },
   {
+    accent: 'border-violet-500',
     icon: (
-      <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
+      <svg className="fill-violet-400" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
         <path d="M10.284.33a1 1 0 1 0-.574 1.917 6.049 6.049 0 0 1 2.417 1.395A1 1 0 0 0 13.5 2.188 8.034 8.034 0 0 0 10.284.33ZM6.288 2.248A1 1 0 0 0 5.718.33 8.036 8.036 0 0 0 2.5 2.187a1 1 0 0 0 1.372 1.455 6.036 6.036 0 0 1 2.415-1.395ZM1.42 5.401a1 1 0 0 1 .742 1.204 6.025 6.025 0 0 0 0 2.79 1 1 0 0 1-1.946.462 8.026 8.026 0 0 1 0-3.714A1 1 0 0 1 1.421 5.4Zm13.16 0A1 1 0 1 1 16.526 5.863a6.025 6.025 0 0 1 0 2.79 1 1 0 1 1-1.946-.463 6.026 6.026 0 0 0 0-2.79Z" />
       </svg>
     ),
     title: 'ETS-sourced, not random internet',
-    body: 'ETS publishes a recommended reading list. We only pull from those sources — every article already meets the standard ETS uses to build the test itself.',
+    body: 'ETS publishes a recommended reading list. We only pull from those sources — every article already meets the standard ETS uses.',
   },
   {
+    accent: 'border-orange-500',
     icon: (
-      <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
+      <svg className="fill-orange-400" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
         <path d="M8 0a1 1 0 0 1 1 1v14a1 1 0 1 1-2 0V1a1 1 0 0 1 1-1Zm6 3a1 1 0 0 0-1 1v8a1 1 0 0 0 1 1h1a1 1 0 1 1 0 2h-1a3 3 0 0 1-3-3V4a3 3 0 0 1 3-3h1a1 1 0 1 1 0 2h-1ZM1 1a1 1 0 0 0 0 2h1a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 1 0 0 2h1a3 3 0 0 0 3-3V4a3 3 0 0 0-3-3H1Z" />
       </svg>
     ),
@@ -145,13 +144,14 @@ const USPS = [
     body: 'Each article is scored 1–5 for complexity. You always know what you\'re getting into — great for calibrating as your test date approaches.',
   },
   {
+    accent: 'border-cyan-500',
     icon: (
-      <svg className="fill-blue-500" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
+      <svg className="fill-cyan-400" xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 16 16">
         <path d="M9 1a1 1 0 1 0-2 0v6a1 1 0 0 0 2 0V1ZM4.572 3.08a1 1 0 0 0-1.144-1.64A7.987 7.987 0 0 0 0 8a8 8 0 0 0 16 0c0-2.72-1.36-5.117-3.428-6.56a1 1 0 1 0-1.144 1.64A5.987 5.987 0 0 1 14 8 6 6 0 1 1 2 8a5.987 5.987 0 0 1 2.572-4.92Z" />
       </svg>
     ),
     title: '5 minutes a day, compounding',
-    body: '365 articles a year is the most underrated GRE verbal strategy. The habit is easy to start — one email, one excerpt, two questions.',
+    body: '365 articles a year is the most underrated GRE verbal strategy. One email, one excerpt, two questions — the habit is easy to keep.',
   },
 ]
 
@@ -217,13 +217,12 @@ function SamplePreview() {
       </div>
       <div className="px-6 py-6">
         <h3 className="font-serif text-xl font-bold text-gray-900 mb-4">{SAMPLE.title}</h3>
-        {/* Tooltip hint */}
         <p className="text-xs text-gray-400 mb-3 italic">Hover the highlighted words to see definitions</p>
         <p className="text-gray-700 text-sm leading-8 font-serif mb-6 overflow-visible">
           {renderExcerpt(SAMPLE.excerpt, SAMPLE.vocab)}
         </p>
         <div className="mb-6">
-          <p className="text-xs tracking-widest uppercase text-gray-400 mb-3">GRE Vocabulary — hover for definitions</p>
+          <p className="text-xs tracking-widest uppercase text-gray-400 mb-3">GRE Vocabulary</p>
           <div className="grid gap-2">
             {SAMPLE.vocab.map((v, i) => (
               <div key={i} className="flex gap-3 text-sm">
@@ -309,7 +308,7 @@ function SubscribeForm() {
   }
 
   if (subscribed || status === 'success') return (
-    <div className="text-center">
+    <div>
       <p className="text-gray-900 text-sm font-medium">You&apos;re subscribed.</p>
       <p className="text-gray-500 text-sm mt-0.5 mb-4">Check your inbox every morning.</p>
       <a
@@ -335,15 +334,15 @@ function SubscribeForm() {
         <button
           type="submit"
           disabled={status === 'loading'}
-          className="group relative inline-flex items-center justify-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 whitespace-nowrap shadow-sm"
+          className="group inline-flex items-center justify-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 whitespace-nowrap shadow-sm"
         >
           {status === 'loading' ? 'Subscribing...' : (
-            <>Start reading free <span className="tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">→</span></>
+            <>Start reading free <span className="text-blue-200 transition-transform group-hover:translate-x-0.5">→</span></>
           )}
         </button>
       </form>
       {status === 'error' && (
-        <p className="text-red-600 text-xs mt-2">Something went wrong. Try again or email us directly.</p>
+        <p className="text-red-600 text-xs mt-2">Something went wrong. Try again.</p>
       )}
     </div>
   )
@@ -363,14 +362,20 @@ function HomeNav() {
           <span className="font-serif text-2xl font-bold tracking-tight text-gray-900">Greheads</span>
         </div>
         <div className="flex items-center gap-3">
-          <a href="/articles" className="text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium">
+          {/* Archive hidden on mobile — too tight */}
+          <a href="/articles" className="hidden sm:block text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium">
             Archive
           </a>
           {!subscribed && (
             <a href="#subscribe"
-              className="group relative inline-flex items-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm">
+              className="group inline-flex items-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm">
               Subscribe free
-              <span className="tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">→</span>
+              <span className="text-blue-200 transition-transform group-hover:translate-x-0.5">→</span>
+            </a>
+          )}
+          {subscribed && (
+            <a href="/articles" className="sm:hidden text-sm text-gray-500 hover:text-gray-900 font-medium">
+              Archive
             </a>
           )}
         </div>
@@ -386,85 +391,117 @@ export default function Home() {
 
         <HomeNav />
 
-        {/* Hero */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-12 pb-10 text-center">
+        {/* ── Hero ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-12">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-          {/* Social proof avatars */}
-          <div className="mb-6 border-y [border-image:linear-gradient(to_right,transparent,rgb(203_213_225_/_0.8),transparent)_1]">
-            <div className="py-3 flex flex-col sm:flex-row items-center justify-center gap-2">
-              <div className="-space-x-2 flex">
-                {AVATARS.map(({ seed, bg }) => (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    key={seed}
-                    src={`https://api.dicebear.com/9.x/personas/svg?seed=${seed}&backgroundColor=${bg}`}
-                    alt={seed}
-                    width={28}
-                    height={28}
-                    className="w-7 h-7 rounded-full border-2 border-[#faf9f6] bg-gray-100"
-                  />
-                ))}
+            {/* Left: text + form */}
+            <div className="text-center lg:text-left lg:pt-6">
+
+              {/* Social proof */}
+              <div className="fade-up fade-up-1 flex flex-col sm:flex-row lg:flex-row items-center justify-center lg:justify-start gap-2 mb-6">
+                <div className="-space-x-2 flex">
+                  {AVATARS.map(({ seed, bg }) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={seed}
+                      src={`https://api.dicebear.com/9.x/personas/svg?seed=${seed}&backgroundColor=${bg}`}
+                      alt={seed}
+                      width={28}
+                      height={28}
+                      className="w-7 h-7 rounded-full border-2 border-[#faf9f6] bg-gray-100"
+                    />
+                  ))}
+                </div>
+                <p className="text-sm text-gray-500">
+                  Join <span className="font-semibold text-gray-900">readers</span> building their GRE verbal score daily
+                </p>
               </div>
-              <p className="text-sm text-gray-500">
-                Join <span className="font-semibold text-gray-900">readers</span> building their GRE verbal score daily
+
+              {/* Headline */}
+              <h1 className="fade-up fade-up-2 font-serif text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 leading-[1.1] tracking-tight mb-5">
+                Read like the<br className="hidden sm:block" /> GRE expects<br className="hidden sm:block" /> you to.
+              </h1>
+
+              <p className="fade-up fade-up-3 text-gray-500 text-base sm:text-lg leading-relaxed max-w-lg mx-auto lg:mx-0 mb-7">
+                One article per day from ETS-recommended sources. GRE vocabulary in context. Comprehension questions built in. Free, forever.
               </p>
+
+              <div id="subscribe" className="fade-up fade-up-4 flex justify-center lg:justify-start mb-3 scroll-mt-24">
+                <SubscribeForm />
+              </div>
+              <p className="fade-up fade-up-5 text-gray-400 text-xs text-center lg:text-left">No spam. Unsubscribe anytime.</p>
+            </div>
+
+            {/* Right: sample preview — desktop only */}
+            <div className="hidden lg:block">
+              <SamplePreview />
             </div>
           </div>
-
-          {/* Headline with gradient borders */}
-          <h1 className="mb-5 border-y text-3xl sm:text-5xl md:text-6xl font-serif font-bold text-gray-900 leading-tight
-            [border-image:linear-gradient(to_right,transparent,rgb(203_213_225_/_0.8),transparent)_1] py-4 max-w-3xl mx-auto">
-            Read like the GRE expects you to.
-          </h1>
-
-          <p className="text-gray-500 text-base sm:text-lg leading-relaxed max-w-xl mx-auto mb-6">
-            One article per day from ETS-recommended sources. GRE vocabulary in context.
-            Comprehension questions built in. Free, forever.
-          </p>
-
-          <div id="subscribe" className="flex justify-center mb-3 scroll-mt-24">
-            <SubscribeForm />
-          </div>
-          <p className="text-gray-400 text-xs">No spam. Unsubscribe anytime.</p>
         </section>
 
-        {/* Source bar */}
+        {/* ── Source bar ── */}
         <section className="border-y border-gray-100 bg-white py-5">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <p className="text-center text-xs tracking-widest uppercase text-gray-400 mb-4">Articles sourced from</p>
-            <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:justify-center gap-x-8 gap-y-3">
+            {/* Horizontal scroll on mobile, centered flex on desktop */}
+            <div className="flex overflow-x-auto scrollbar-hide gap-8 sm:justify-center pb-1">
               {SOURCES.map(s => (
-                <div key={s.name} className="flex items-center gap-2">
+                <div key={s.name} className="flex items-center gap-2 shrink-0">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={`https://www.google.com/s2/favicons?domain=${s.domain}&sz=32`}
                     alt={s.name}
-                    width={18}
-                    height={18}
-                    className="rounded-sm grayscale opacity-60"
+                    width={16}
+                    height={16}
+                    className="rounded-sm grayscale opacity-50"
                     onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none' }}
                   />
-                  <span className="text-sm font-medium text-gray-500">{s.name}</span>
+                  <span className="text-sm font-medium text-gray-500 whitespace-nowrap">{s.name}</span>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* How it works */}
-        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-16">
-          <div className="text-center mb-8 sm:mb-12">
+        {/* ── How it works ── */}
+        <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
+          <div className="text-center mb-10 sm:mb-14">
             <p className="text-xs tracking-widest uppercase text-gray-400 mb-2">How it works</p>
-            <h2 className="font-serif text-2xl sm:text-4xl font-bold text-gray-900">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900">
               Three steps. Five minutes a day.
             </h2>
           </div>
-          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8">
-            {STEPS.map(step => (
-              <div key={step.number} className="flex sm:block gap-4 items-start">
-                <p className="font-serif text-3xl sm:text-5xl font-bold text-gray-100 sm:mb-3 leading-none shrink-0">{step.number}</p>
-                <div>
-                  <h3 className="font-serif text-base sm:text-lg font-bold text-gray-900 mb-1">{step.title}</h3>
+
+          {/* Desktop: 5-col grid with arrow connectors */}
+          <div className="hidden sm:grid grid-cols-[1fr_auto_1fr_auto_1fr] gap-4 items-start">
+            {STEPS.map((step, i) => (
+              <>
+                <div key={step.number}>
+                  <p className="font-serif text-5xl font-bold text-gray-100 mb-3 leading-none">{step.number}</p>
+                  <h3 className="font-serif text-lg font-bold text-gray-900 mb-2">{step.title}</h3>
+                  <p className="text-gray-500 text-sm leading-relaxed">{step.body}</p>
+                </div>
+                {i < STEPS.length - 1 && (
+                  <div key={`arrow-${i}`} className="flex items-start pt-10 px-2">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" className="text-gray-200">
+                      <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                )}
+              </>
+            ))}
+          </div>
+
+          {/* Mobile: stacked, clean */}
+          <div className="sm:hidden space-y-8">
+            {STEPS.map((step, i) => (
+              <div key={step.number} className="flex gap-5 items-start">
+                <div className="shrink-0 w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                  <span className="font-serif font-bold text-gray-400 text-sm">{step.number}</span>
+                </div>
+                <div className={i < STEPS.length - 1 ? 'pb-2 border-b border-gray-100 w-full' : 'w-full'}>
+                  <h3 className="font-serif text-base font-bold text-gray-900 mb-1">{step.title}</h3>
                   <p className="text-gray-500 text-sm leading-relaxed">{step.body}</p>
                 </div>
               </div>
@@ -472,17 +509,15 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Sample preview */}
-        <section className="bg-white border-y border-gray-100 py-10 sm:py-16">
+        {/* ── Live preview — mobile only (desktop sees it in hero) ── */}
+        <section className="lg:hidden bg-white border-y border-gray-100 py-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-10">
+            <div className="text-center mb-8">
               <p className="text-xs tracking-widest uppercase text-gray-400 mb-2">Live preview</p>
-              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 This is what lands in your inbox.
               </h2>
-              <p className="text-gray-500 text-sm">
-                Tap the highlighted words for definitions. Try the questions below.
-              </p>
+              <p className="text-gray-500 text-sm">Tap the highlighted words for definitions. Try the questions.</p>
             </div>
             <div className="max-w-2xl mx-auto">
               <SamplePreview />
@@ -490,49 +525,56 @@ export default function Home() {
           </div>
         </section>
 
-        {/* USPs — dark section like Cruip features grid */}
-        <section className="relative bg-gray-900 py-10 sm:py-16">
+        {/* ── USPs ── */}
+        <section className="relative bg-gray-900 py-12 sm:py-20">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
-            <div className="text-center mb-12">
+            <div className="text-center mb-10 sm:mb-14">
               <p className="text-xs tracking-widest uppercase text-blue-400 mb-2">Why Greheads</p>
               <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-100">
                 Built specifically for the GRE Verbal section.
               </h2>
             </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-px bg-gray-800 border border-gray-800 rounded-xl overflow-hidden">
+            {/* 2-col on mobile, 3-col on desktop */}
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-px bg-gray-800 border border-gray-800 rounded-xl overflow-hidden">
               {USPS.map(usp => (
-                <div key={usp.title} className="bg-gray-900 p-6 md:p-8">
+                <div key={usp.title} className={`bg-gray-900 p-5 md:p-7 border-t-2 ${usp.accent}`}>
                   <div className="mb-3">{usp.icon}</div>
-                  <h3 className="font-semibold text-gray-200 mb-2">{usp.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{usp.body}</p>
+                  <h3 className="font-semibold text-gray-200 mb-1.5 text-sm md:text-base">{usp.title}</h3>
+                  <p className="text-gray-400 text-xs md:text-sm leading-relaxed">{usp.body}</p>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Bottom CTA */}
-        <section className="py-10 sm:py-16 px-4">
+        {/* ── Bottom CTA ── */}
+        <section className="relative overflow-hidden py-16 sm:py-24 px-4">
+          {/* Warm gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-amber-50 via-[#faf9f6] to-blue-50 -z-10" />
           <div className="max-w-xl mx-auto text-center">
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Build the habit before test day.
+            <p className="text-xs tracking-widest uppercase text-gray-400 mb-3">Start today</p>
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+              Build the habit<br />before test day.
             </h2>
             <p className="text-gray-500 text-sm mb-8 leading-relaxed">
               Start tomorrow morning. One article. Three vocab words. Two questions.
             </p>
             <BottomSubscribeForm />
-            <p className="text-gray-400 text-xs mt-3">No spam. Unsubscribe anytime.</p>
+            <p className="text-gray-400 text-xs mt-4">No spam. Unsubscribe anytime.</p>
           </div>
         </section>
 
-        {/* Footer */}
+        {/* ── Footer ── */}
         <footer className="border-t border-gray-100 py-6 px-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-2">
             <div className="flex items-center gap-2">
               <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center text-white font-serif font-bold text-xs">G</div>
               <span className="font-serif font-bold text-gray-900">Greheads</span>
             </div>
-            <p className="text-gray-400 text-xs">Daily GRE reading practice. Free, forever.</p>
+            <div className="flex items-center gap-4">
+              <a href="/articles" className="text-gray-400 text-xs hover:text-gray-600 transition-colors">Archive</a>
+              <p className="text-gray-400 text-xs">Daily GRE reading practice. Free, forever.</p>
+            </div>
           </div>
         </footer>
 
