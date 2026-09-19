@@ -16,10 +16,9 @@ export default function OGImage() {
           flexDirection: 'column',
           justifyContent: 'space-between',
           padding: '72px 80px',
-          fontFamily: 'Georgia, serif',
         }}
       >
-        {/* Top: logo mark */}
+        {/* Top: logo */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <div
             style={{
@@ -37,35 +36,23 @@ export default function OGImage() {
           >
             G
           </div>
-          <span style={{ color: '#fff', fontSize: '28px', fontWeight: 700, letterSpacing: '-0.5px' }}>
+          <span style={{ color: '#fff', fontSize: '28px', fontWeight: 700 }}>
             Greheads
           </span>
         </div>
 
         {/* Middle: headline */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <div
-            style={{
-              fontSize: '64px',
-              fontWeight: 800,
-              color: '#fff',
-              lineHeight: 1.1,
-              letterSpacing: '-1px',
-            }}
-          >
-            Read like the GRE
-            <br />
-            expects you to.
+          <div style={{ fontSize: '64px', fontWeight: 800, color: '#fff', lineHeight: 1.1 }}>
+            Read like the GRE expects you to.
           </div>
-          <div style={{ fontSize: '24px', color: '#888', lineHeight: 1.5 }}>
-            One curated article a day — vocab in context,
-            <br />
-            comprehension questions built in. Free.
+          <div style={{ fontSize: '24px', color: '#888' }}>
+            One curated article a day — vocab in context, comprehension questions built in. Free.
           </div>
         </div>
 
-        {/* Bottom: sources tag */}
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+        {/* Bottom: source tags */}
+        <div style={{ display: 'flex', gap: '12px' }}>
           {['Aeon', 'Quanta', 'The Atlantic', 'Smithsonian', 'Nautilus'].map(s => (
             <div
               key={s}
@@ -75,6 +62,7 @@ export default function OGImage() {
                 borderRadius: '100px',
                 color: '#666',
                 fontSize: '14px',
+                display: 'flex',
               }}
             >
               {s}
