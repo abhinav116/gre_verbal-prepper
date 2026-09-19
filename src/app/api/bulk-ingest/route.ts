@@ -11,7 +11,7 @@ const parser = new Parser()
 const SCORE_THRESHOLD = 9
 const MIN_WORDS = 400
 const MAX_WORDS = 5000
-const SCORE_LIMIT = 20   // candidates to score per run
+const SCORE_LIMIT = 5    // candidates to score per run
 const ENRICH_LIMIT = 5   // top articles to enrich and store per run
 
 function wordCount(text: string): number {
