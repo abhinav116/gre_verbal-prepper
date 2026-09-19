@@ -338,7 +338,10 @@ export default function Home() {
         {/* Nav */}
         <nav className="border-b border-gray-100 bg-[#faf9f6]/80 backdrop-blur sticky top-0 z-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
-            <span className="font-serif text-xl font-bold tracking-tight text-gray-900">Greheads</span>
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center text-white font-serif font-bold text-base">G</div>
+              <span className="font-serif text-2xl font-bold tracking-tight text-gray-900">Greheads</span>
+            </div>
             <a href="#subscribe"
               className="group relative inline-flex items-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-4 py-1.5 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all shadow-sm">
               Subscribe free
@@ -489,7 +492,10 @@ export default function Home() {
         {/* Footer */}
         <footer className="border-t border-gray-100 py-6 px-4">
           <div className="max-w-6xl mx-auto flex items-center justify-between flex-wrap gap-2">
-            <span className="font-serif font-bold text-gray-900">Greheads</span>
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-gray-900 rounded flex items-center justify-center text-white font-serif font-bold text-xs">G</div>
+              <span className="font-serif font-bold text-gray-900">Greheads</span>
+            </div>
             <p className="text-gray-400 text-xs">Daily GRE reading practice. Free, forever.</p>
           </div>
         </footer>
