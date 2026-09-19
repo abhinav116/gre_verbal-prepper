@@ -16,11 +16,18 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Greheads — Read like the GRE expects you to",
   description:
-    "One article per day from ETS-recommended sources. GRE vocabulary in context. Comprehension questions built in. Free.",
+    "One curated article a day. GRE vocabulary in context. Comprehension questions built in. Free.",
   openGraph: {
-    title: "Greheads",
-    description: "Daily GRE reading practice from The Economist, Scientific American, The Atlantic, and more.",
+    title: "Greheads — Read like the GRE expects you to",
+    description: "One curated article a day. GRE vocabulary in context. Comprehension questions built in. Free.",
     type: "website",
+    url: process.env.NEXT_PUBLIC_BASE_URL,
+    siteName: "Greheads",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Greheads — Read like the GRE expects you to",
+    description: "One curated article a day. GRE vocabulary in context. Comprehension questions built in. Free.",
   },
 };
 
