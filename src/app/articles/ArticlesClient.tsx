@@ -168,13 +168,11 @@ function ArticleGrid({ articles }: { articles: ArticleCard[] }) {
                 className="group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200"
               >
                 {/* Thumbnail */}
-                <div className={`relative h-36 bg-gradient-to-br ${style.gradient} flex flex-col justify-between p-5`}>
-                  <span className="text-3xl">{style.icon}</span>
-                  <div>
-                    <span className={`text-xs font-semibold tracking-widest uppercase ${style.label} opacity-80`}>
-                      {article.topic}
-                    </span>
-                  </div>
+                <div className={`relative h-20 bg-gradient-to-br ${style.gradient} flex items-center justify-between px-5`}>
+                  <span className="text-2xl">{style.icon}</span>
+                  <span className={`text-xs font-semibold tracking-widest uppercase ${style.label} opacity-80`}>
+                    {article.topic}
+                  </span>
                   {/* Subtle pattern overlay */}
                   <div className="absolute inset-0 opacity-10"
                     style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
