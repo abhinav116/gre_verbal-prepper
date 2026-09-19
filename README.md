@@ -68,27 +68,14 @@ Topic rotation across 4 categories ensures balanced coverage across the week.
 
 ---
 
-## Current State (as of September 2026)
+## Roadmap
 
-- Landing page live at greverbal-prep.vercel.app
-- Ingestion pipeline working end-to-end
-- ~18 articles stored across Science, Humanities, Social Science (6 each)
-- Email send pipeline built, not yet tested end-to-end
-- Article reader page (`/articles/[id]`) exists but not styled
-- No Business topic articles yet (no business-focused RSS sources added)
-
-**Known issues:**
-- Groq 120b model occasionally returns malformed JSON in enrichment responses (unescaped characters inside string values) — needs more robust parsing
-- Session-only crons for bulk ingestion (need to be restarted if session closes)
-- Unsubscribe page not built yet
-- Email confirmation flow not end-to-end tested
-
-**Immediate next steps:**
-1. Fix JSON parsing robustness in enrichment
-2. Build article reader page
-3. Build unsubscribe page
-4. End-to-end test: subscribe → confirm → receive email → click → read + answer questions
-5. Manual QA of existing articles before public launch
+- Article reader page with answer reveal and score feedback
+- Unsubscribe page
+- Business topic coverage
+- User progress tracking across days
+- Topic preference filter on signup
+- Archive of past articles
 
 ---
 
