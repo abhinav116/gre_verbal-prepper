@@ -8,7 +8,7 @@ import { Topic } from '@/lib/types'
 
 const parser = new Parser()
 
-const SCORE_THRESHOLD = 12
+const SCORE_THRESHOLD = 9
 const MIN_WORDS = 400
 const MAX_WORDS = 5000
 

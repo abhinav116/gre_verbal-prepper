@@ -8,7 +8,7 @@ import { Topic } from '@/lib/types'
 
 const parser = new Parser()
 
-const SCORE_THRESHOLD = 12
+const SCORE_THRESHOLD = 9
 const MIN_WORDS = 400
 const MAX_WORDS = 5000
 const SCORE_LIMIT = 20   // candidates to score per run
@@ -89,9 +89,11 @@ export async function GET(req: NextRequest) {
   // Score a slice of candidates (use offset to page through on repeated runs)
   const slice = candidates.slice(offset, offset + SCORE_LIMIT)
   const scored: Array<{ article: ScoredArticle; score: number; topic: Topic }> = []
+  const scoreLog: Array<{ title: string; score: number | null; topic: string | null }> = []
 
   for (const candidate of slice) {
     const result = await scoreArticle(candidate)
+    scoreLog.push({ title: candidate.title, score: result?.score ?? null, topic: result?.topic ?? null })
     if (!result || result.score < SCORE_THRESHOLD) continue
     scored.push({ article: candidate, score: result.score, topic: result.topic })
   }
@@ -102,6 +104,7 @@ export async function GET(req: NextRequest) {
       candidates_found: candidates.length,
       slice_start: offset,
       slice_end: offset + SCORE_LIMIT,
+      score_log: scoreLog,
     })
   }
 
@@ -134,6 +137,7 @@ export async function GET(req: NextRequest) {
     failed: failed.length,
     articles: stored,
     failures: failed,
+    score_log: scoreLog,
     candidates_found: candidates.length,
     next_offset: offset + SCORE_LIMIT,
   })

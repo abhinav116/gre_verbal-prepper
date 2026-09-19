@@ -29,28 +29,23 @@ You are a GRE verbal preparation expert. Score this article for GRE reading prac
 Article:
 Title: ${article.title}
 Source: ${article.source}
+Topic hint: ${article.topic_hint}
 Content: ${article.content.slice(0, 3000)}
 
-Score each dimension from 1-5:
-1. reading_complexity: Sentence length, subordinate clauses, abstraction level (5 = very complex, graduate-level)
-2. gre_vocab_density: Frequency of GRE-tier vocabulary words (5 = many high-frequency GRE words)
-3. argument_structure: Author makes a clear claim and defends it with evidence (5 = strong argumentative structure)
-4. gre_register: Reads like a GRE passage — hedging language, contrast markers, no colloquialisms (5 = very GRE-like)
-5. topic_clarity: Clearly fits one category: Science, Humanities, Social Science, or Business
+Score each dimension from 1-5 (integers only):
+1. linguistic_difficulty: Complex sentences, subordinate clauses, GRE-tier vocabulary (5 = graduate-level prose)
+2. gre_fit: Formal register, hedging language, argumentative structure, no colloquialisms (5 = reads like a GRE passage)
+3. topic_suitability: Substantive, non-listicle, intellectually serious content (5 = excellent GRE material)
 
 Also determine:
 - topic: one of "Science", "Humanities", "Social Science", "Business"
-- total_score: sum of all 5 dimensions (max 25)
 
 Return ONLY valid JSON, no markdown:
 {
-  "reading_complexity": number,
-  "gre_vocab_density": number,
-  "argument_structure": number,
-  "gre_register": number,
-  "topic_clarity": number,
-  "topic": string,
-  "total_score": number
+  "linguistic_difficulty": number,
+  "gre_fit": number,
+  "topic_suitability": number,
+  "topic": string
 }
 `
 
@@ -133,9 +128,10 @@ async function groqChat(model: string, prompt: string, maxTokens: number): Promi
 
 export async function scoreArticle(article: ScoredArticle): Promise<{ score: number; topic: Topic } | null> {
   try {
-    const text = await groqChat('openai/gpt-oss-20b', SCORE_PROMPT(article), 600)
+    const text = await groqChat('openai/gpt-oss-20b', SCORE_PROMPT(article), 200)
     const parsed = parseJSON(text)
-    return { score: parsed.total_score, topic: parsed.topic as Topic }
+    const score = (parsed.linguistic_difficulty || 0) + (parsed.gre_fit || 0) + (parsed.topic_suitability || 0)
+    return { score, topic: parsed.topic as Topic }
   } catch (err) {
     console.error('scoreArticle failed:', article.title, err)
     return null
