@@ -18,26 +18,36 @@ export default function BottomSubscribeForm() {
   }
 
   if (status === 'success') {
-    return <p className="text-white text-sm">You're in. First edition coming soon.</p>
+    return (
+      <div className="text-center">
+        <p className="text-gray-900 text-sm font-medium">You&apos;re in.</p>
+        <p className="text-gray-500 text-sm mt-0.5">First edition coming soon. Check your inbox.</p>
+      </div>
+    )
   }
 
   return (
-    <form onSubmit={subscribe} className="flex flex-col sm:flex-row gap-2 justify-center">
-      <input
-        type="email"
-        placeholder="your@email.com"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required
-        className="flex-1 max-w-xs border border-gray-700 rounded-lg px-4 py-3 text-sm bg-gray-800 text-white placeholder-gray-500 focus:outline-none focus:border-gray-400"
-      />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="bg-white text-gray-900 px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors whitespace-nowrap disabled:opacity-50"
-      >
-        {status === 'loading' ? 'Subscribing...' : 'Start reading free'}
-      </button>
-    </form>
+    <div>
+      <form onSubmit={subscribe} className="flex flex-col sm:flex-row gap-2 justify-center">
+        <input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+          className="flex-1 max-w-xs border border-gray-300 rounded-lg px-4 py-3 text-sm bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:border-gray-800"
+        />
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="bg-gray-900 text-white px-6 py-3 rounded-lg text-sm font-medium hover:bg-gray-800 transition-colors whitespace-nowrap disabled:opacity-50"
+        >
+          {status === 'loading' ? 'Subscribing...' : 'Start reading free'}
+        </button>
+      </form>
+      {status === 'error' && (
+        <p className="text-red-600 text-xs mt-2 text-center">Something went wrong. Try again or email us directly.</p>
+      )}
+    </div>
   )
 }

@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, Suspense } from 'react'
-import { useSearchParams } from 'next/navigation'
 import BottomSubscribeForm from './BottomSubscribeForm'
 
 const AVATARS = [
@@ -285,8 +284,6 @@ function SamplePreview() {
 }
 
 function SubscribeForm() {
-  const searchParams = useSearchParams()
-  const confirmed = searchParams.get('confirmed')
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
 
@@ -301,32 +298,38 @@ function SubscribeForm() {
     setStatus(res.ok ? 'success' : 'error')
   }
 
-  if (confirmed) return (
-    <p className="text-green-700 text-sm font-medium">You&apos;re confirmed. First article arrives tomorrow at 8 AM.</p>
-  )
   if (status === 'success') return (
-    <p className="text-gray-700 text-sm">You&apos;re in. First edition coming soon.</p>
+    <div className="text-center">
+      <p className="text-gray-900 text-sm font-medium">You&apos;re in.</p>
+      <p className="text-gray-500 text-sm mt-0.5">First edition coming soon. Check your inbox.</p>
+    </div>
   )
 
   return (
-    <form onSubmit={subscribe} className="flex flex-col sm:flex-row gap-2 w-full max-w-md">
-      <input
-        type="email"
-        placeholder="your@email.com"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        required
-        className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-800 bg-white"
-      />
-      <button
-        type="submit"
-        disabled={status === 'loading'}
-        className="group relative inline-flex items-center justify-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 whitespace-nowrap shadow-sm"
-      >
-        Start reading free
-        <span className="tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">→</span>
-      </button>
-    </form>
+    <div className="w-full max-w-md">
+      <form onSubmit={subscribe} className="flex flex-col sm:flex-row gap-2">
+        <input
+          type="email"
+          placeholder="your@email.com"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          required
+          className="flex-1 border border-gray-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-gray-800 bg-white"
+        />
+        <button
+          type="submit"
+          disabled={status === 'loading'}
+          className="group relative inline-flex items-center justify-center gap-1 bg-gradient-to-b from-blue-500 to-blue-600 text-white px-6 py-3 rounded-lg text-sm font-medium hover:from-blue-600 hover:to-blue-700 transition-all disabled:opacity-50 whitespace-nowrap shadow-sm"
+        >
+          {status === 'loading' ? 'Subscribing...' : (
+            <>Start reading free <span className="tracking-normal text-blue-200 transition-transform group-hover:translate-x-0.5">→</span></>
+          )}
+        </button>
+      </form>
+      {status === 'error' && (
+        <p className="text-red-600 text-xs mt-2">Something went wrong. Try again or email us directly.</p>
+      )}
+    </div>
   )
 }
 
