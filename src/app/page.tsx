@@ -395,8 +395,8 @@ export default function Home() {
         <section className="max-w-6xl mx-auto px-4 sm:px-6 pt-10 sm:pt-14 pb-12">
           <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-start">
 
-            {/* Left: text + form */}
-            <div className="text-center lg:text-left lg:pt-6">
+            {/* Left: text + form — sticky so it stays visible while scrolling the preview */}
+            <div className="text-center lg:text-left lg:pt-6 lg:sticky lg:top-24 lg:self-start">
 
               {/* Social proof */}
               <div className="fade-up fade-up-1 flex flex-col sm:flex-row lg:flex-row items-center justify-center lg:justify-start gap-2 mb-6">
