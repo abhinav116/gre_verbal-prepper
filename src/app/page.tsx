@@ -305,7 +305,7 @@ function SubscribeForm() {
     <p className="text-green-700 text-sm font-medium">You&apos;re confirmed. First article arrives tomorrow at 8 AM.</p>
   )
   if (status === 'success') return (
-    <p className="text-gray-700 text-sm">Check your inbox to confirm your subscription.</p>
+    <p className="text-gray-700 text-sm">You&apos;re in. First edition coming soon.</p>
   )
 
   return (
