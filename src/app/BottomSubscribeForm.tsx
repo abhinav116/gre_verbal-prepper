@@ -18,7 +18,7 @@ export default function BottomSubscribeForm() {
   }
 
   if (status === 'success') {
-    return <p className="text-white text-sm">Check your inbox for a confirmation email.</p>
+    return <p className="text-white text-sm">You're in. First edition coming soon.</p>
   }
 
   return (
