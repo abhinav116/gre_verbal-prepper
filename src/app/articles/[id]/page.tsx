@@ -3,6 +3,7 @@ import { supabaseAdmin as supabase } from '@/lib/supabase'
 import { Article, MCQQuestion } from '@/lib/types'
 import ArticleReader from './ArticleReader'
 import PassageWithTooltips from './PassageWithTooltips'
+import SiteNav from '@/components/SiteNav'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -27,21 +28,16 @@ export default async function ArticlePage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-[#faf9f6]">
-      {/* Header */}
-      <div className="border-b border-gray-100 bg-white px-6 py-4">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <a href="/" className="font-serif font-bold text-gray-900 text-lg tracking-tight">Greheads</a>
-          <div className="flex gap-2 flex-wrap">
-            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{article.topic}</span>
-            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{difficultyLabel(article.difficulty)}</span>
-            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{article.reading_time} min read</span>
-          </div>
-        </div>
-      </div>
+      <SiteNav />
 
       <div className="max-w-6xl mx-auto px-6 py-10">
         {/* Title + source */}
         <div className="mb-8">
+          <div className="flex gap-2 flex-wrap mb-3">
+            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{article.topic}</span>
+            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{difficultyLabel(article.difficulty)}</span>
+            <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">{article.reading_time} min read</span>
+          </div>
           <h1 className="text-3xl font-serif font-bold text-gray-900 leading-tight mb-2">
             {article.title}
           </h1>
