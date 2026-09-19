@@ -435,6 +435,10 @@ export default function Home() {
 
             {/* Right: sample preview — desktop only */}
             <div className="hidden lg:block">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs tracking-widest uppercase text-gray-400 font-medium">Sample article</span>
+                <span className="text-xs bg-amber-100 text-amber-700 px-2 py-0.5 rounded-full font-medium">Try it live →</span>
+              </div>
               <SamplePreview />
             </div>
           </div>
@@ -513,11 +517,11 @@ export default function Home() {
         <section className="lg:hidden bg-white border-y border-gray-100 py-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
             <div className="text-center mb-8">
-              <p className="text-xs tracking-widest uppercase text-gray-400 mb-2">Live preview</p>
+              <p className="text-xs tracking-widest uppercase text-gray-400 mb-2">Sample article</p>
               <h2 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
                 This is what lands in your inbox.
               </h2>
-              <p className="text-gray-500 text-sm">Tap the highlighted words for definitions. Try the questions.</p>
+              <p className="text-gray-500 text-sm">This is an example — tap highlighted words for definitions, try the questions.</p>
             </div>
             <div className="max-w-2xl mx-auto">
               <SamplePreview />
