@@ -14,6 +14,14 @@ interface ArticleCard {
 }
 
 const TOPICS: Topic[] = ['Science', 'Humanities', 'Social Science', 'Business']
+
+const TOPIC_STYLE: Record<Topic, { gradient: string; icon: string; label: string }> = {
+  'Science':        { gradient: 'from-blue-500 to-cyan-400',    icon: '🔬', label: 'text-blue-100' },
+  'Humanities':     { gradient: 'from-amber-500 to-orange-400', icon: '📖', label: 'text-amber-100' },
+  'Social Science': { gradient: 'from-violet-500 to-purple-400',icon: '🌐', label: 'text-violet-100' },
+  'Business':       { gradient: 'from-emerald-500 to-teal-400', icon: '📊', label: 'text-emerald-100' },
+}
+
 const DIFFICULTIES = [
   { value: 0, label: 'All' },
   { value: 1, label: 'Introductory' },
@@ -150,26 +158,50 @@ function ArticleGrid({ articles }: { articles: ArticleCard[] }) {
       {filtered.length === 0 ? (
         <p className="text-gray-400 text-sm text-center py-16">No articles match these filters.</p>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filtered.map(article => (
-            <a
-              key={article.id}
-              href={`/articles/${article.id}`}
-              className="group bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md hover:border-gray-200 transition-all"
-            >
-              <div className="flex gap-2 flex-wrap mb-3">
-                <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">{article.topic}</span>
-                <span className={`text-xs px-2 py-0.5 rounded-full ${difficultyColor(article.difficulty)}`}>
-                  {difficultyLabel(article.difficulty)}
-                </span>
-                <span className="text-xs text-gray-400 ml-auto">{article.reading_time} min</span>
-              </div>
-              <h3 className="font-serif font-bold text-gray-900 text-sm leading-snug mb-2 group-hover:text-blue-600 transition-colors line-clamp-3">
-                {article.title}
-              </h3>
-              <p className="text-xs text-gray-400">{article.source}</p>
-            </a>
-          ))}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filtered.map(article => {
+            const style = TOPIC_STYLE[article.topic] ?? TOPIC_STYLE['Science']
+            return (
+              <a
+                key={article.id}
+                href={`/articles/${article.id}`}
+                className="group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200"
+              >
+                {/* Thumbnail */}
+                <div className={`relative h-36 bg-gradient-to-br ${style.gradient} flex flex-col justify-between p-5`}>
+                  <span className="text-3xl">{style.icon}</span>
+                  <div>
+                    <span className={`text-xs font-semibold tracking-widest uppercase ${style.label} opacity-80`}>
+                      {article.topic}
+                    </span>
+                  </div>
+                  {/* Subtle pattern overlay */}
+                  <div className="absolute inset-0 opacity-10"
+                    style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="p-5">
+                  <h3 className="font-serif font-bold text-gray-900 text-base leading-snug mb-3 line-clamp-3 group-hover:text-blue-600 transition-colors">
+                    {article.title}
+                  </h3>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className={`text-xs px-2 py-0.5 rounded-full font-medium ${difficultyColor(article.difficulty)}`}>
+                        {difficultyLabel(article.difficulty)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                      <span>{article.source}</span>
+                      <span>·</span>
+                      <span>{article.reading_time} min</span>
+                    </div>
+                  </div>
+                </div>
+              </a>
+            )
+          })}
         </div>
       )}
 
