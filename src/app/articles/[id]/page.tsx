@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { supabaseAdmin as supabase } from '@/lib/supabase'
 import { Article, MCQQuestion } from '@/lib/types'
 import ArticleReader from './ArticleReader'
+import PassageWithTooltips from './PassageWithTooltips'
 
 interface Props {
   params: Promise<{ id: string }>
@@ -23,16 +24,6 @@ export default async function ArticlePage({ params }: Props) {
   if (error || !data) notFound()
 
   const article = data as Article
-
-  // Highlight GRE vocab words in excerpt
-  let highlightedExcerpt = article.excerpt
-  article.gre_vocab.forEach(v => {
-    const regex = new RegExp(`\\b(${v.word})\\b`, 'gi')
-    highlightedExcerpt = highlightedExcerpt.replace(
-      regex,
-      `<mark class="bg-amber-100 text-amber-900 px-0.5 rounded cursor-help" title="${v.definition}">$1</mark>`
-    )
-  })
 
   return (
     <main className="min-h-screen bg-[#faf9f6]">
@@ -68,15 +59,14 @@ export default async function ArticlePage({ params }: Props) {
           {/* Left: Passage */}
           <div className="flex-1 min-w-0">
             <p className="text-xs tracking-widest uppercase text-gray-400 mb-3">Passage</p>
-            <div
-              className="bg-white border border-gray-100 rounded-xl p-8 text-gray-800 text-base leading-8 font-serif shadow-sm"
-              dangerouslySetInnerHTML={{ __html: highlightedExcerpt.replace(/\n/g, '<br><br>') }}
-            />
+            <div className="bg-white border border-gray-100 rounded-xl p-8 shadow-sm">
+              <PassageWithTooltips excerpt={article.excerpt} gre_vocab={article.gre_vocab} />
+            </div>
           </div>
 
           {/* Right: Vocab + Questions (sticky) */}
           <div className="w-full lg:w-[380px] shrink-0">
-            <div className="lg:sticky lg:top-8 space-y-8">
+            <div className="lg:sticky lg:top-8 space-y-6">
 
               {/* GRE Vocabulary */}
               <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
@@ -96,6 +86,18 @@ export default async function ArticlePage({ params }: Props) {
               <div className="bg-white border border-gray-100 rounded-xl p-6 shadow-sm">
                 <p className="text-xs tracking-widest uppercase text-gray-400 mb-4">Comprehension Questions</p>
                 <ArticleReader questions={article.questions as MCQQuestion[]} />
+              </div>
+
+              {/* Subscribe CTA — shown to users who landed without subscribing */}
+              <div className="bg-gray-900 rounded-xl p-6 text-white">
+                <p className="font-serif font-bold text-base mb-1">Get this daily.</p>
+                <p className="text-gray-400 text-sm mb-4">One GRE-level passage, 3 vocab words, 2 questions — every morning.</p>
+                <a
+                  href="/"
+                  className="block w-full text-center py-2.5 bg-white text-gray-900 text-sm font-medium rounded-lg hover:bg-gray-100 transition-colors"
+                >
+                  Subscribe free
+                </a>
               </div>
 
             </div>
