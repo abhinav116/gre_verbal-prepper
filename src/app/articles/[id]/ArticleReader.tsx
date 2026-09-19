@@ -28,15 +28,35 @@ export default function ArticleReader({ questions }: Props) {
     setRevealed(prev => ({ ...prev, [qIdx]: true }))
   }
 
-  async function share() {
+  function share() {
     const text = `I scored ${correctCount}/${questions.length} on today's GRE reading passage on Greheads. Try it: ${window.location.href}`
     if (navigator.share) {
-      await navigator.share({ text })
-    } else {
-      await navigator.clipboard.writeText(text)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
+      navigator.share({ text }).catch(() => {})
+      return
     }
+    // Clipboard API fallback
+    if (navigator.clipboard?.writeText) {
+      navigator.clipboard.writeText(text).then(() => {
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2000)
+      }).catch(() => legacyCopy(text))
+    } else {
+      legacyCopy(text)
+    }
+  }
+
+  function legacyCopy(text: string) {
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.focus()
+    ta.select()
+    document.execCommand('copy')
+    document.body.removeChild(ta)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   return (
