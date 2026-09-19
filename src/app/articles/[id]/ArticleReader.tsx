@@ -30,11 +30,6 @@ export default function ArticleReader({ questions }: Props) {
 
   function share() {
     const text = `I scored ${correctCount}/${questions.length} on today's GRE reading passage on Greheads. Try it: ${window.location.href}`
-    if (navigator.share) {
-      navigator.share({ text }).catch(() => {})
-      return
-    }
-    // Clipboard API fallback
     if (navigator.clipboard?.writeText) {
       navigator.clipboard.writeText(text).then(() => {
         setCopied(true)
