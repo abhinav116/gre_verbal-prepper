@@ -35,3 +35,20 @@ create index if not exists subscribers_active_idx on subscribers (active);
 
 -- Index for confirmation token lookup
 create index if not exists subscribers_token_idx on subscribers (confirmation_token);
+
+-- Scored candidates queue (decoupled from enrichment)
+create table if not exists scored_candidates (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  source text not null,
+  url text not null unique,
+  content text not null,
+  published_at timestamptz,
+  topic_hint text not null,
+  score integer not null,
+  topic text not null,
+  status text not null default 'pending' check (status in ('pending', 'enriched', 'failed')),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists scored_candidates_status_idx on scored_candidates (status, score desc);
