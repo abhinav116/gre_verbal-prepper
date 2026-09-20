@@ -2,6 +2,25 @@
 
 import { useState, useEffect, Suspense } from 'react'
 import BottomSubscribeForm from './BottomSubscribeForm'
+import TodaysTeaser from './TodaysTeaser'
+
+interface ArticleData {
+  id: string; title: string; topic: string; difficulty: number
+  source: string; excerpt: string; reading_time: number
+}
+
+interface SiteStats {
+  articleCount: number
+  latestArticle: ArticleData | null
+}
+
+const FAQS = [
+  { q: 'Is it actually free?', a: 'Yes, forever. No credit card, no trial, no paywall. The only gated feature is the full article archive.' },
+  { q: 'How long does each article take?', a: 'About 5 minutes. A 400-word excerpt, 3 vocab words with definitions, and 2 comprehension questions.' },
+  { q: 'What if I miss a day?', a: 'No pressure. Every article lives in the archive permanently — catch up whenever you want.' },
+  { q: 'Is this for beginners or advanced students?', a: 'Both. Every article is rated 1–5 for difficulty so you always know what you\'re getting into.' },
+  { q: 'How is this different from GRE prep books?', a: 'Prep books give you decontextualised vocab lists. We give you real articles from the same sources ETS uses, with vocab shown in context — which is how lasting retention actually works.' },
+]
 
 const AVATARS = [
   { seed: 'Felix',   bg: 'b6e3f4' },
@@ -348,6 +367,28 @@ function SubscribeForm() {
   )
 }
 
+function FaqItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false)
+  return (
+    <div className="border border-gray-100 rounded-xl overflow-hidden">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition-colors"
+      >
+        <span className="font-medium text-gray-900 text-sm">{q}</span>
+        <svg className={`w-4 h-4 text-gray-400 shrink-0 ml-4 transition-transform ${open ? 'rotate-180' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="px-5 pb-4">
+          <p className="text-gray-500 text-sm leading-relaxed">{a}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
 function HomeNav() {
   const [subscribed, setSubscribed] = useState(false)
   useEffect(() => {
@@ -385,6 +426,12 @@ function HomeNav() {
 }
 
 export default function Home() {
+  const [stats, setStats] = useState<SiteStats | null>(null)
+
+  useEffect(() => {
+    fetch('/api/stats').then(r => r.json()).then(setStats).catch(() => {})
+  }, [])
+
   return (
     <Suspense>
       <div className="min-h-screen">
@@ -415,6 +462,9 @@ export default function Home() {
                 </div>
                 <p className="text-sm text-gray-500">
                   Join <span className="font-semibold text-gray-900">readers</span> building their GRE verbal score daily
+                  {stats && stats.articleCount > 0 && (
+                    <span className="ml-2 text-gray-400">· {stats.articleCount} articles published</span>
+                  )}
                 </p>
               </div>
 
@@ -468,6 +518,22 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── Today's article teaser ── */}
+        {stats?.latestArticle && (
+          <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-green-50 text-green-700 text-xs font-medium px-3 py-1.5 rounded-full mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse inline-block" />
+                Today's article is live
+              </div>
+              <h2 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900">
+                This is what's in your inbox this morning.
+              </h2>
+            </div>
+            <TodaysTeaser article={stats.latestArticle} />
+          </section>
+        )}
+
         {/* ── How it works ── */}
         <section className="max-w-6xl mx-auto px-4 sm:px-6 py-12 sm:py-20">
           <div className="text-center mb-10 sm:mb-14">
@@ -513,6 +579,87 @@ export default function Home() {
           </div>
         </section>
 
+        {/* ── Email mockup ── */}
+        <section className="bg-white border-y border-gray-100 py-12 sm:py-16">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6">
+            <div className="grid lg:grid-cols-2 gap-12 items-center">
+              {/* Left: copy */}
+              <div>
+                <p className="text-xs tracking-widest uppercase text-gray-400 mb-3">What you actually get</p>
+                <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                  One email.<br />Every morning.<br />8 AM.
+                </h2>
+                <p className="text-gray-500 text-sm leading-relaxed mb-6">
+                  No threads, no newsletters-within-newsletters. One article, three vocab words, two questions — then you're done. Takes five minutes.
+                </p>
+                <ul className="space-y-2">
+                  {['A 400-word excerpt from ETS-recommended sources', '3 GRE vocab words shown in context', '2 comprehension questions with instant feedback', 'Link to the full article if you want more'].map(item => (
+                    <li key={item} className="flex items-start gap-2 text-sm text-gray-600">
+                      <svg className="w-4 h-4 text-green-500 mt-0.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Right: inbox mockup */}
+              <div>
+                <div className="bg-white rounded-2xl border border-gray-200 shadow-xl overflow-hidden">
+                  {/* Browser chrome */}
+                  <div className="bg-gray-100 border-b border-gray-200 px-4 py-3 flex items-center gap-3">
+                    <div className="flex gap-1.5">
+                      <div className="w-3 h-3 rounded-full bg-red-400" />
+                      <div className="w-3 h-3 rounded-full bg-amber-400" />
+                      <div className="w-3 h-3 rounded-full bg-green-400" />
+                    </div>
+                    <div className="flex-1 bg-white rounded-md px-3 py-1 text-xs text-gray-400 border border-gray-200 text-center">
+                      mail.google.com/inbox
+                    </div>
+                  </div>
+
+                  {/* Inbox list */}
+                  <div className="divide-y divide-gray-100">
+                    {/* Today's email — highlighted */}
+                    <div className="px-4 py-4 bg-blue-50/60 flex gap-3 items-start">
+                      <div className="w-8 h-8 bg-gray-900 rounded-lg flex items-center justify-center text-white font-serif font-bold text-xs shrink-0 mt-0.5">G</div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-0.5">
+                          <span className="text-sm font-bold text-gray-900">Greheads</span>
+                          <span className="text-xs text-gray-400 shrink-0 ml-2">8:00 AM</span>
+                        </div>
+                        <p className="text-sm text-gray-700 font-medium truncate">Today's GRE article: The Paradox of Antibiotic…</p>
+                        <p className="text-xs text-gray-400 mt-0.5">Science · Hard · 4 min read · 3 vocab words inside</p>
+                      </div>
+                    </div>
+
+                    {/* Past emails — blurred/skeletal */}
+                    {[
+                      { label: 'How Memory Shapes Morality', day: 'Yesterday' },
+                      { label: 'The Economics of Climate Inaction', day: 'Tue' },
+                      { label: 'What Language Reveals About Thought', day: 'Mon' },
+                    ].map(row => (
+                      <div key={row.label} className="px-4 py-3.5 flex gap-3 items-start opacity-35 select-none">
+                        <div className="w-8 h-8 bg-gray-200 rounded-lg shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-sm text-gray-400">Greheads</span>
+                            <span className="text-xs text-gray-300 shrink-0 ml-2">{row.day}</span>
+                          </div>
+                          <div className="h-3 bg-gray-200 rounded w-3/4 mb-1.5" />
+                          <div className="h-2.5 bg-gray-100 rounded w-1/2" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-center text-xs text-gray-400 mt-3">One email. Every morning. Unsubscribe anytime.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
         {/* ── Live preview — mobile only (desktop sees it in hero) ── */}
         <section className="lg:hidden bg-white border-y border-gray-100 py-10">
           <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -548,6 +695,19 @@ export default function Home() {
                 </div>
               ))}
             </div>
+          </div>
+        </section>
+
+        {/* ── FAQ ── */}
+        <section className="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
+          <div className="text-center mb-10">
+            <p className="text-xs tracking-widest uppercase text-gray-400 mb-2">FAQ</p>
+            <h2 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900">Quick answers</h2>
+          </div>
+          <div className="space-y-4">
+            {FAQS.map((faq, i) => (
+              <FaqItem key={i} q={faq.q} a={faq.a} />
+            ))}
           </div>
         </section>
 
