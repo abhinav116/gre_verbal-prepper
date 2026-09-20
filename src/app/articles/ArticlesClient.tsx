@@ -11,6 +11,7 @@ interface ArticleCard {
   difficulty: number
   reading_time: number
   created_at: string
+  og_image?: string | null
 }
 
 const TOPICS: Topic[] = ['Science', 'Humanities', 'Social Science', 'Business']
@@ -168,16 +169,28 @@ function ArticleGrid({ articles }: { articles: ArticleCard[] }) {
                 className="group bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200"
               >
                 {/* Thumbnail */}
-                <div className={`relative h-20 bg-gradient-to-br ${style.gradient} flex items-center justify-between px-5`}>
-                  <span className="text-2xl">{style.icon}</span>
-                  <span className={`text-xs font-semibold tracking-widest uppercase ${style.label} opacity-80`}>
-                    {article.topic}
-                  </span>
-                  {/* Subtle pattern overlay */}
-                  <div className="absolute inset-0 opacity-10"
-                    style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
-                  />
-                </div>
+                {article.og_image ? (
+                  <div className="relative h-40 overflow-hidden bg-gray-100">
+                    <img
+                      src={article.og_image}
+                      alt=""
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                    <div className="absolute bottom-0 left-0 right-0 px-3 py-1.5 bg-gradient-to-t from-black/60 to-transparent flex items-end justify-between">
+                      <span className="text-xs font-semibold tracking-widest uppercase text-white/90">{article.topic}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <div className={`relative h-20 bg-gradient-to-br ${style.gradient} flex items-center justify-between px-5`}>
+                    <span className="text-2xl">{style.icon}</span>
+                    <span className={`text-xs font-semibold tracking-widest uppercase ${style.label} opacity-80`}>
+                      {article.topic}
+                    </span>
+                    <div className="absolute inset-0 opacity-10"
+                      style={{ backgroundImage: 'radial-gradient(circle at 80% 20%, white 1px, transparent 1px)', backgroundSize: '24px 24px' }}
+                    />
+                  </div>
+                )}
 
                 {/* Content */}
                 <div className="p-5">

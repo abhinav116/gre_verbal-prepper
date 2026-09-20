@@ -16,7 +16,7 @@ function wordCount(text: string): number {
   return text.trim().split(/\s+/).length
 }
 
-async function fetchFullText(url: string): Promise<string | null> {
+async function fetchFullText(url: string): Promise<{ content: string; ogImage: string | null } | null> {
   try {
     const res = await fetch(url, {
       headers: {
@@ -28,6 +28,14 @@ async function fetchFullText(url: string): Promise<string | null> {
     if (!res.ok) return null
     const html = await res.text()
     const $ = cheerio.load(html)
+
+    // Extract OG image before stripping elements
+    const ogImage =
+      $('meta[property="og:image"]').attr('content') ||
+      $('meta[name="og:image"]').attr('content') ||
+      $('meta[property="twitter:image"]').attr('content') ||
+      null
+
     $('script, style, nav, header, footer, aside, .ad, .advertisement, .sidebar, .menu, .comments').remove()
     const paragraphs: string[] = []
     $('p').each((_, el) => {
@@ -35,7 +43,7 @@ async function fetchFullText(url: string): Promise<string | null> {
       if (text.length > 60) paragraphs.push(text)
     })
     const content = paragraphs.join('\n\n')
-    return content.length > 200 ? content : null
+    return content.length > 200 ? { content, ogImage } : null
   } catch {
     return null
   }
@@ -64,8 +72,9 @@ export async function GET(req: NextRequest) {
         const title = item.title || ''
         if (LISTICLE_PATTERNS.some(p => p.test(title))) continue
 
-        let content = await fetchFullText(item.link)
-        if (!content) content = item.contentSnippet || item.content || item.summary || ''
+        const fetched = await fetchFullText(item.link)
+        const content = fetched?.content || item.contentSnippet || item.content || item.summary || ''
+        const ogImage = fetched?.ogImage || null
 
         const wc = wordCount(content)
         if (wc < MIN_WORDS || wc > MAX_WORDS) continue
@@ -75,6 +84,7 @@ export async function GET(req: NextRequest) {
           source: source.name,
           url: item.link,
           content,
+          og_image: ogImage,
           published_at: item.pubDate || item.isoDate || null,
           topic_hint: source.topic_hint,
         })
@@ -112,6 +122,7 @@ export async function GET(req: NextRequest) {
       topic_hint: candidate.topic_hint,
       score: result.score,
       topic: result.topic,
+      og_image: candidate.og_image ?? null,
     })
     scoreLog.push({ title: candidate.title, score: result.score, topic: result.topic, saved: true })
   }

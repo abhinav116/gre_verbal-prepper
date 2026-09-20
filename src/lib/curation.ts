@@ -7,6 +7,7 @@ export interface ScoredArticle {
   content: string
   published_at: string | null
   topic_hint: string
+  og_image?: string | null
 }
 
 export interface EnrichedArticle {
@@ -21,6 +22,7 @@ export interface EnrichedArticle {
   questions: MCQQuestion[]
   score: number
   published_at: string | null
+  og_image?: string | null
 }
 
 const SCORE_PROMPT = (article: ScoredArticle) => `
@@ -170,5 +172,6 @@ export async function enrichArticle(article: ScoredArticle, score: number, topic
     questions: parsed.questions,
     score,
     published_at: article.published_at,
+    og_image: article.og_image ?? null,
   }
 }

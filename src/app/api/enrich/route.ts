@@ -24,6 +24,7 @@ export async function GET() {
     content: candidate.content,
     published_at: candidate.published_at,
     topic_hint: candidate.topic_hint,
+    og_image: candidate.og_image ?? null,
   }
 
   let enriched

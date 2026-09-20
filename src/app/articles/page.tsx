@@ -7,7 +7,7 @@ export const revalidate = 3600 // re-fetch at most once per hour
 export default async function ArticlesPage() {
   const { data } = await supabaseAdmin
     .from('articles')
-    .select('id, title, source, topic, difficulty, reading_time, created_at')
+    .select('id, title, source, topic, difficulty, reading_time, created_at, og_image')
     .order('created_at', { ascending: false })
 
   const articles = data ?? []
