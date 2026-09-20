@@ -2,7 +2,7 @@ import { supabaseAdmin } from '@/lib/supabase'
 import SiteNav from '@/components/SiteNav'
 import ArticlesClient from './ArticlesClient'
 
-export const revalidate = 3600 // re-fetch at most once per hour
+export const dynamic = 'force-dynamic'
 
 export default async function ArticlesPage() {
   const { data } = await supabaseAdmin
