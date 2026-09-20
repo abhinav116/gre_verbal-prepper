@@ -462,9 +462,6 @@ export default function Home() {
                 </div>
                 <p className="text-sm text-gray-500">
                   Join <span className="font-semibold text-gray-900">readers</span> building their GRE verbal score daily
-                  {stats && stats.articleCount > 0 && (
-                    <span className="ml-2 text-gray-400">· {stats.articleCount} articles published</span>
-                  )}
                 </p>
               </div>
 
@@ -481,6 +478,16 @@ export default function Home() {
                 <SubscribeForm />
               </div>
               <p className="fade-up fade-up-5 text-gray-400 text-xs text-center lg:text-left">No spam. Unsubscribe anytime.</p>
+              <div className="fade-up fade-up-5 flex items-center gap-3 justify-center lg:justify-start mt-3">
+                <span className="text-xs text-gray-400 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-gray-300 inline-block" />
+                  24 articles in the archive
+                </span>
+                <span className="text-xs text-gray-400 flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-green-400 inline-block" />
+                  20+ added every week
+                </span>
+              </div>
             </div>
 
             {/* Right: sample preview — desktop only */}
