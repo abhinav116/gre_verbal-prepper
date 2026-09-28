@@ -20,6 +20,9 @@ export default function SiteNav() {
           <a href="/articles" className="text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium">
             Archive
           </a>
+          <a href="/vocab" className="text-sm text-gray-500 hover:text-gray-900 transition-colors font-medium">
+            Vocab
+          </a>
           {!subscribed && (
             <a
               href="/#subscribe"

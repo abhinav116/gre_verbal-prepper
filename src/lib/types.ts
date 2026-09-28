@@ -30,6 +30,22 @@ export interface Article {
   created_at: string
 }
 
+export interface VocabWord {
+  id: string
+  word: string
+  part_of_speech: string
+  definition: string
+  phonetic_hook: string | null
+  is_negative: boolean
+  reference_type: 'celebrity' | 'fictional'
+  reference_name: string
+  reference_context: string
+  example_sentence: string
+  difficulty: number
+  image_url: string | null
+  created_at: string
+}
+
 export interface Subscriber {
   id: string
   email: string

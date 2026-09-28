@@ -14,6 +14,7 @@ create table if not exists articles (
   published_at timestamptz,
   sent_at timestamptz,
   sent boolean not null default false,
+  og_image text, -- OG image URL scraped from source article
   created_at timestamptz not null default now()
 );
 
@@ -48,7 +49,27 @@ create table if not exists scored_candidates (
   score integer not null,
   topic text not null,
   status text not null default 'pending' check (status in ('pending', 'enriched', 'failed')),
+  og_image text,
   created_at timestamptz not null default now()
 );
 
 create index if not exists scored_candidates_status_idx on scored_candidates (status, score desc);
+
+-- Vocabulary flashcards table
+create table if not exists vocab_words (
+  id uuid primary key default gen_random_uuid(),
+  word text not null unique,
+  part_of_speech text not null default 'adj.',
+  definition text not null,
+  phonetic_hook text,
+  is_negative boolean not null default false,
+  reference_type text not null default 'celebrity' check (reference_type in ('celebrity', 'fictional')),
+  reference_name text not null,
+  reference_context text not null,
+  example_sentence text not null,
+  difficulty integer not null default 2 check (difficulty between 1 and 3),
+  image_url text,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists vocab_words_difficulty_idx on vocab_words (difficulty);
