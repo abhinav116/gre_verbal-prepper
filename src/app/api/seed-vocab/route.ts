@@ -18,7 +18,9 @@ export async function GET(req: Request) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ word }),
       })
-      const data = await res.json()
+      const text = await res.text()
+      let data: Record<string, string>
+      try { data = JSON.parse(text) } catch { data = { error: `non-JSON response (${res.status}): ${text.slice(0, 200)}` } }
       results.push({ word, status: data.success ? 'created' : (data.message || data.error || 'unknown') })
     } catch (err) {
       results.push({ word, status: `failed: ${String(err)}` })

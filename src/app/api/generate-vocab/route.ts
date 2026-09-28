@@ -47,39 +47,45 @@ async function groqChat(prompt: string): Promise<string> {
 }
 
 export async function POST(req: NextRequest) {
-  const { word } = await req.json()
-  if (!word) return NextResponse.json({ error: 'word required' }, { status: 400 })
+  try {
+    const { word } = await req.json()
+    if (!word) return NextResponse.json({ error: 'word required' }, { status: 400 })
 
-  const normalised = word.toLowerCase().trim()
+    const normalised = word.toLowerCase().trim()
 
-  // Skip if already exists
-  const { data: existing } = await supabaseAdmin
-    .from('vocab_words')
-    .select('id')
-    .eq('word', normalised)
-    .single()
+    // Skip if already exists
+    const { data: existing } = await supabaseAdmin
+      .from('vocab_words')
+      .select('id')
+      .eq('word', normalised)
+      .single()
 
-  if (existing) {
-    return NextResponse.json({ message: 'already exists', word: normalised })
+    if (existing) {
+      return NextResponse.json({ message: 'already exists', word: normalised })
+    }
+
+    const text = await groqChat(VOCAB_PROMPT(normalised))
+    if (!text) return NextResponse.json({ error: 'empty LLM response' }, { status: 500 })
+
+    const parsed = JSON.parse(text)
+
+    const { error } = await supabaseAdmin.from('vocab_words').insert({
+      word: normalised,
+      part_of_speech: parsed.part_of_speech,
+      definition: parsed.definition,
+      is_negative: parsed.is_negative,
+      phonetic_hook: parsed.phonetic_hook ?? null,
+      reference_type: parsed.reference_type,
+      reference_name: parsed.reference_name,
+      reference_context: parsed.reference_context,
+      example_sentence: parsed.example_sentence,
+      difficulty: parsed.difficulty,
+    })
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 })
+
+    return NextResponse.json({ success: true, word: normalised })
+  } catch (err) {
+    return NextResponse.json({ error: String(err) }, { status: 500 })
   }
-
-  const text = await groqChat(VOCAB_PROMPT(normalised))
-  const parsed = JSON.parse(text)
-
-  const { error } = await supabaseAdmin.from('vocab_words').insert({
-    word: normalised,
-    part_of_speech: parsed.part_of_speech,
-    definition: parsed.definition,
-    is_negative: parsed.is_negative,
-    phonetic_hook: parsed.phonetic_hook ?? null,
-    reference_type: parsed.reference_type,
-    reference_name: parsed.reference_name,
-    reference_context: parsed.reference_context,
-    example_sentence: parsed.example_sentence,
-    difficulty: parsed.difficulty,
-  })
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 })
-
-  return NextResponse.json({ success: true, word: normalised })
 }
