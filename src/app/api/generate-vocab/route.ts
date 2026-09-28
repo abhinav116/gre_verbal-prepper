@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
+import Anthropic from '@anthropic-ai/sdk'
 import { supabaseAdmin } from '@/lib/supabase'
+
+const anthropic = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
 const VOCAB_PROMPT = (word: string) => `
 You are a GRE vocabulary coach creating flashcards for Telugu students from Andhra Pradesh and Telangana preparing for GRE. Your audience is age 20-25, engineering grads, deeply familiar with Tollywood, AP/Telangana politics, and cricket. English is their second language — vocabulary is genuinely hard for them.
@@ -24,26 +27,13 @@ Return ONLY valid JSON:
 }
 `
 
-async function groqChat(prompt: string): Promise<string> {
-  const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${process.env.GROQ_API_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: 'groq/compound-beta',
-      max_tokens: 600,
-      messages: [{ role: 'user', content: prompt }],
-      response_format: { type: 'json_object' },
-    }),
+async function claudeChat(prompt: string): Promise<string> {
+  const msg = await anthropic.messages.create({
+    model: 'claude-haiku-4-5-20251001',
+    max_tokens: 600,
+    messages: [{ role: 'user', content: prompt }],
   })
-  if (!res.ok) {
-    const err = await res.text()
-    throw new Error(`Groq API error ${res.status}: ${err}`)
-  }
-  const data = await res.json()
-  return data.choices[0]?.message?.content || ''
+  return msg.content[0].type === 'text' ? msg.content[0].text : ''
 }
 
 export async function POST(req: NextRequest) {
@@ -64,7 +54,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'already exists', word: normalised })
     }
 
-    const text = await groqChat(VOCAB_PROMPT(normalised))
+    const text = await claudeChat(VOCAB_PROMPT(normalised))
     if (!text) return NextResponse.json({ error: 'empty LLM response' }, { status: 500 })
 
     const parsed = JSON.parse(text)
