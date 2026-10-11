@@ -32,7 +32,7 @@ async function groqChat(prompt: string): Promise<string> {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      model: 'llama-3.3-70b-versatile',
+      model: 'llama-3.1-8b-instant',
       max_tokens: 600,
       messages: [{ role: 'user', content: prompt }],
       response_format: { type: 'json_object' },
