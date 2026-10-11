@@ -45,8 +45,8 @@ const SEED_DATA = [
     is_negative: true,
     phonetic_hook: 'Os-TEN-ta-tious — imagine spending 10 crores just to show off your status to everyone',
     reference_type: 'fictional',
-    reference_name: 'Srimanthudu',
-    reference_context: 'The villain in Srimanthudu flaunts his wealth ostentatiously — gold watches, imported cars, and public displays of dominance just to remind everyone he is rich.',
+    reference_name: 'Baahubali',
+    reference_context: "Bhallaladeva's coronation in Baahubali is pure ostentatious theater — gold armor, a throne built from weapons, elephants in procession. Every detail is designed not to govern but to overwhelm and intimidate.",
     example_sentence: 'That uncle rented a helicopter for his son\'s birthday bro... pure ostentatious behaviour 😭',
     difficulty: 2,
   },
@@ -58,7 +58,7 @@ const SEED_DATA = [
     phonetic_hook: "Ped-AN-tic — like a teacher who marks you wrong for writing 'colour' instead of 'color'",
     reference_type: 'fictional',
     reference_name: 'Vikramarkudu',
-    reference_context: 'The corrupt inspector in Vikramarkudu is pedantic about paperwork when it suits him — demanding exact forms and stamps while completely ignoring actual justice.',
+    reference_context: 'The corrupt SI in Vikramarkudu hides behind procedure — rejecting complaints on technicalities, demanding the right stamp on the right form, weaponizing bureaucratic pedantry to protect the powerful and frustrate the powerless.',
     example_sentence: 'Bro our HOD is so pedantic, he rejected my project report because the font was 11pt instead of 12pt 🙄',
     difficulty: 2,
   },
@@ -70,7 +70,7 @@ const SEED_DATA = [
     phonetic_hook: "Ee-QUIV-o-cate — giving 'equal' weight to both sides so you never have to choose one",
     reference_type: 'fictional',
     reference_name: 'Pokiri',
-    reference_context: 'The corrupt politicians in Pokiri constantly equivocate when questioned — never directly denying or admitting, always talking in circles to protect themselves.',
+    reference_context: "Bali (Prakash Raj), the crime lord in Pokiri, never directly orders a hit — he speaks in half-sentences, raises an eyebrow, lets silence do the work. His equivocation is his shield: everyone understands him, but nothing can ever be pinned on him.",
     example_sentence: 'Journalist asked him direct question and that minister started equivocating like mad bro, classic politician move 😤',
     difficulty: 2,
   },
@@ -118,7 +118,7 @@ const SEED_DATA = [
     phonetic_hook: "Men-DAY-shus — 'shady men' who are desi shady — men who lie to your face",
     reference_type: 'fictional',
     reference_name: 'Temper',
-    reference_context: 'The villain in Temper is thoroughly mendacious — fabricating evidence, lying to superiors, and manipulating everyone around him to cover his crimes.',
+    reference_context: 'The corrupt ACP in Temper is mendacious to his core — planting evidence, fabricating witness statements, and lying in court with a straight face while a rapist walks free because of him.',
     example_sentence: 'That mendacious councillor promised 5 lakh jobs, gave zero. Classic 😒',
     difficulty: 3,
   },
@@ -142,7 +142,7 @@ const SEED_DATA = [
     phonetic_hook: "Du-PLIC-i-tous — 'duplicate' + us — like a duplicate copy of yourself that does the opposite of what you say",
     reference_type: 'fictional',
     reference_name: 'Magadheera',
-    reference_context: 'The villain in Magadheera is duplicitous — pledging loyalty to the king while secretly plotting his downfall, wearing a mask of friendship over pure treachery.',
+    reference_context: 'Lahari Singh in Magadheera swears loyalty to the princess in public while secretly arranging her abduction — his duplicity spans lifetimes, the same treacherous soul reborn to betray again.',
     example_sentence: 'That duplicitous teammate told management we missed the deadline because of me bro 😡',
     difficulty: 3,
   },
@@ -166,7 +166,7 @@ const SEED_DATA = [
     phonetic_hook: "Per-FID-i-ous — 'per fide' — betraying the faith (fide) people put in you",
     reference_type: 'fictional',
     reference_name: 'Khaleja',
-    reference_context: 'The antagonist in Khaleja is perfidious — posing as a community protector while secretly poisoning the very people who trust him, the ultimate betrayal.',
+    reference_context: 'The factory owner in Khaleja smiles at village meetings while quietly ordering chemicals dumped into their water supply — perfidious to the core, poisoning the very people whose trust he courts.',
     example_sentence: 'That perfidious business partner took our idea and registered it in his own name bro 🤬',
     difficulty: 3,
   },
@@ -190,7 +190,7 @@ const SEED_DATA = [
     phonetic_hook: "Pug-NAY-shus — 'pug' (a fighting dog) + nasty — a pug that's always ready to fight despite being small",
     reference_type: 'fictional',
     reference_name: 'Vikramarkudu',
-    reference_context: 'The gang leader in Vikramarkudu is relentlessly pugnacious — he solves every problem with violence, picking fights over the smallest perceived disrespect.',
+    reference_context: "Bhavani (Ajay) in Vikramarkudu doesn't need a reason to fight — a glance, a late payment, a wrong tone of voice is enough. His pugnacity is pathological: violence is his only language.",
     example_sentence: 'That pugnacious auto driver picked a fight with three people within 10 minutes bro 😂',
     difficulty: 2,
   },
@@ -255,7 +255,15 @@ export async function GET() {
       .single()
 
     if (existing) {
-      results.push({ word: entry.word, status: 'already exists' })
+      const { error } = await supabaseAdmin
+        .from('vocab_words')
+        .update({
+          reference_type: entry.reference_type,
+          reference_name: entry.reference_name,
+          reference_context: entry.reference_context,
+        })
+        .eq('word', entry.word)
+      results.push({ word: entry.word, status: error ? `error: ${error.message}` : 'updated' })
       continue
     }
 
