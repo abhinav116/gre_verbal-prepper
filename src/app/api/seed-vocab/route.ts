@@ -1,30 +1,266 @@
 import { NextResponse } from 'next/server'
+import { supabaseAdmin } from '@/lib/supabase'
 
-const SEED_WORDS = [
-  'truculent', 'loquacious', 'ebullient', 'ostentatious', 'pedantic',
-  'equivocate', 'magnanimous', 'sycophant', 'garrulous', 'mendacious',
-  'obsequious', 'duplicitous', 'vitriolic', 'perfidious', 'laconic',
-  'pugnacious', 'sanguine', 'sagacious', 'recalcitrant', 'voluble',
+const SEED_DATA = [
+  {
+    word: 'truculent',
+    part_of_speech: 'adj.',
+    definition: 'eager to argue or fight; aggressively defiant',
+    is_negative: true,
+    phonetic_hook: 'TRUCK-you-lent — imagine a truck driver who wants to fight everyone on the road',
+    reference_type: 'fictional',
+    reference_name: 'Pushpa',
+    reference_context: "Pushpa Raj never backs down from anyone — police, rivals, his own men. That truculent 'thaggede le' attitude defines him.",
+    example_sentence: "Bro that guy was so truculent, he picked a fight with the bouncer for no reason 💀",
+    difficulty: 2,
+  },
+  {
+    word: 'loquacious',
+    part_of_speech: 'adj.',
+    definition: 'tending to talk a great deal; very chatty',
+    is_negative: false,
+    phonetic_hook: "Lo-QWAY-shus — imagine someone who just won't stop talking at a lo (local) tea stall",
+    reference_type: 'celebrity',
+    reference_name: 'Pawan Kalyan',
+    reference_context: 'In his political rallies, Pawan Kalyan is famously loquacious — he starts speaking and the crowd never knows when it will end, but everyone stays hooked.',
+    example_sentence: 'Pawan anna rally lo oka 3 hours matladadu bro, that man is so loquacious 😂',
+    difficulty: 1,
+  },
+  {
+    word: 'ebullient',
+    part_of_speech: 'adj.',
+    definition: 'cheerful and full of energy; bubbling with enthusiasm',
+    is_negative: false,
+    phonetic_hook: 'Ee-BULL-ient — like a bull that is super pumped up and energetic before a fight',
+    reference_type: 'celebrity',
+    reference_name: 'Allu Arjun',
+    reference_context: "Allu Arjun's energy on screen and off it is purely ebullient — whether at Pushpa promotions or dancing, he radiates infectious enthusiasm.",
+    example_sentence: "Bunny's ebullient energy at the Pushpa trailer launch had the whole crowd going crazy bro 🔥",
+    difficulty: 2,
+  },
+  {
+    word: 'ostentatious',
+    part_of_speech: 'adj.',
+    definition: 'characterized by a vulgar or pretentious display; designed to impress',
+    is_negative: true,
+    phonetic_hook: 'Os-TEN-ta-tious — imagine spending 10 crores just to show off your status to everyone',
+    reference_type: 'fictional',
+    reference_name: 'Srimanthudu',
+    reference_context: 'The villain in Srimanthudu flaunts his wealth ostentatiously — gold watches, imported cars, and public displays of dominance just to remind everyone he is rich.',
+    example_sentence: 'That uncle rented a helicopter for his son\'s birthday bro... pure ostentatious behaviour 😭',
+    difficulty: 2,
+  },
+  {
+    word: 'pedantic',
+    part_of_speech: 'adj.',
+    definition: 'overly concerned with minor details or rules; excessively formal',
+    is_negative: true,
+    phonetic_hook: "Ped-AN-tic — like a teacher who marks you wrong for writing 'colour' instead of 'color'",
+    reference_type: 'fictional',
+    reference_name: 'Vikramarkudu',
+    reference_context: 'The corrupt inspector in Vikramarkudu is pedantic about paperwork when it suits him — demanding exact forms and stamps while completely ignoring actual justice.',
+    example_sentence: 'Bro our HOD is so pedantic, he rejected my project report because the font was 11pt instead of 12pt 🙄',
+    difficulty: 2,
+  },
+  {
+    word: 'equivocate',
+    part_of_speech: 'v.',
+    definition: 'to use vague or ambiguous language to avoid committing to a position',
+    is_negative: true,
+    phonetic_hook: "Ee-QUIV-o-cate — giving 'equal' weight to both sides so you never have to choose one",
+    reference_type: 'fictional',
+    reference_name: 'Pokiri',
+    reference_context: 'The corrupt politicians in Pokiri constantly equivocate when questioned — never directly denying or admitting, always talking in circles to protect themselves.',
+    example_sentence: 'Journalist asked him direct question and that minister started equivocating like mad bro, classic politician move 😤',
+    difficulty: 2,
+  },
+  {
+    word: 'magnanimous',
+    part_of_speech: 'adj.',
+    definition: 'generous and forgiving, especially toward a rival or less powerful person',
+    is_negative: false,
+    phonetic_hook: "Mag-NAN-i-mous — magna = great, animus = spirit — like having a 'maha' (great) generous spirit",
+    reference_type: 'celebrity',
+    reference_name: 'Mahesh Babu',
+    reference_context: 'Mahesh Babu is known for his magnanimous nature — quietly funding education for hundreds of underprivileged children without any publicity or fanfare.',
+    example_sentence: 'Mahesh babu garu is truly magnanimous bro, donates crores and never even posts about it 🙏',
+    difficulty: 2,
+  },
+  {
+    word: 'sycophant',
+    part_of_speech: 'n.',
+    definition: 'a person who acts obsequiously toward someone important to gain advantage; a yes-man',
+    is_negative: true,
+    phonetic_hook: "SY-co-phant — 'psycho fan' — like a psycho fan who agrees with everything their hero says no matter what",
+    reference_type: 'fictional',
+    reference_name: 'Baahubali',
+    reference_context: "Bhallaladeva's court is filled with sycophants who praise his every decision, never questioning his cruelty — their flattery only encourages his tyranny.",
+    example_sentence: "That new guy in office is such a sycophant bro, laughs at boss's every joke even when it's not funny 😂",
+    difficulty: 1,
+  },
+  {
+    word: 'garrulous',
+    part_of_speech: 'adj.',
+    definition: 'excessively talkative, especially on trivial matters',
+    is_negative: true,
+    phonetic_hook: "GAR-u-lous — 'gaadu' (that guy in Telugu) + lous — that guy who never stops talking",
+    reference_type: 'fictional',
+    reference_name: 'Arya',
+    reference_context: "Arya's character is charmingly garrulous — he talks nonstop, cracks jokes constantly, and fills every silence with words, which is both endearing and exhausting.",
+    example_sentence: 'Adi so garrulous bro, called me at 11pm and talked for 2 hours about nothing specific 😩',
+    difficulty: 2,
+  },
+  {
+    word: 'mendacious',
+    part_of_speech: 'adj.',
+    definition: 'not telling the truth; lying',
+    is_negative: true,
+    phonetic_hook: "Men-DAY-shus — 'shady men' who are desi shady — men who lie to your face",
+    reference_type: 'fictional',
+    reference_name: 'Temper',
+    reference_context: 'The villain in Temper is thoroughly mendacious — fabricating evidence, lying to superiors, and manipulating everyone around him to cover his crimes.',
+    example_sentence: 'That mendacious councillor promised 5 lakh jobs, gave zero. Classic 😒',
+    difficulty: 3,
+  },
+  {
+    word: 'obsequious',
+    part_of_speech: 'adj.',
+    definition: 'obedient or attentive to an excessive or servile degree; fawning',
+    is_negative: true,
+    phonetic_hook: "Ob-SEE-kwee-us — always following behind in the queue, agreeing with whoever is ahead",
+    reference_type: 'fictional',
+    reference_name: 'Baahubali',
+    reference_context: "Bijjaladeva's minister is obsequious to whoever holds power — praising Bhallaladeva publicly while privately scheming, always bending to the stronger side.",
+    example_sentence: "HR bro was so obsequious during the MD's visit, even pulled his chair out for him 😭",
+    difficulty: 3,
+  },
+  {
+    word: 'duplicitous',
+    part_of_speech: 'adj.',
+    definition: 'deceitful; saying one thing while doing another',
+    is_negative: true,
+    phonetic_hook: "Du-PLIC-i-tous — 'duplicate' + us — like a duplicate copy of yourself that does the opposite of what you say",
+    reference_type: 'fictional',
+    reference_name: 'Magadheera',
+    reference_context: 'The villain in Magadheera is duplicitous — pledging loyalty to the king while secretly plotting his downfall, wearing a mask of friendship over pure treachery.',
+    example_sentence: 'That duplicitous teammate told management we missed the deadline because of me bro 😡',
+    difficulty: 3,
+  },
+  {
+    word: 'vitriolic',
+    part_of_speech: 'adj.',
+    definition: 'filled with bitter criticism or malice; caustic',
+    is_negative: true,
+    phonetic_hook: 'Vit-ri-OL-ic — vitriol is acid — vitriolic words burn like acid on the skin',
+    reference_type: 'fictional',
+    reference_name: 'RRR',
+    reference_context: "The British governor in RRR is vitriolic in his contempt for Indians — his words are laced with poison, designed to humiliate and break spirits.",
+    example_sentence: 'That vitriolic review of our startup made the whole team feel terrible bro 😤',
+    difficulty: 3,
+  },
+  {
+    word: 'perfidious',
+    part_of_speech: 'adj.',
+    definition: 'deceitful and untrustworthy; treacherous',
+    is_negative: true,
+    phonetic_hook: "Per-FID-i-ous — 'per fide' — betraying the faith (fide) people put in you",
+    reference_type: 'fictional',
+    reference_name: 'Khaleja',
+    reference_context: 'The antagonist in Khaleja is perfidious — posing as a community protector while secretly poisoning the very people who trust him, the ultimate betrayal.',
+    example_sentence: 'That perfidious business partner took our idea and registered it in his own name bro 🤬',
+    difficulty: 3,
+  },
+  {
+    word: 'laconic',
+    part_of_speech: 'adj.',
+    definition: 'using very few words; brief and concise',
+    is_negative: false,
+    phonetic_hook: 'La-CON-ic — like a small cone, holding only a little but perfectly shaped',
+    reference_type: 'celebrity',
+    reference_name: 'Mahesh Babu',
+    reference_context: 'In interviews, Mahesh Babu is famously laconic — answering complex questions in one sharp sentence while others ramble for minutes.',
+    example_sentence: "Reporter asked 10 questions, Mahesh said 'work hard, stay humble' and walked off. Peak laconic bro 😎",
+    difficulty: 2,
+  },
+  {
+    word: 'pugnacious',
+    part_of_speech: 'adj.',
+    definition: 'eager or quick to argue, quarrel, or fight',
+    is_negative: true,
+    phonetic_hook: "Pug-NAY-shus — 'pug' (a fighting dog) + nasty — a pug that's always ready to fight despite being small",
+    reference_type: 'fictional',
+    reference_name: 'Vikramarkudu',
+    reference_context: 'The gang leader in Vikramarkudu is relentlessly pugnacious — he solves every problem with violence, picking fights over the smallest perceived disrespect.',
+    example_sentence: 'That pugnacious auto driver picked a fight with three people within 10 minutes bro 😂',
+    difficulty: 2,
+  },
+  {
+    word: 'sanguine',
+    part_of_speech: 'adj.',
+    definition: 'optimistic, especially in difficult situations',
+    is_negative: false,
+    phonetic_hook: "SAN-gwine — the person who sings and drinks wine even when things are tough, always optimistic",
+    reference_type: 'celebrity',
+    reference_name: 'Dhoni',
+    reference_context: "Dhoni is famously sanguine — whether chasing 350 runs or losing wickets rapidly, his calm optimism never wavers, infecting the whole team with belief.",
+    example_sentence: "4 wickets down, 150 to chase and Dhoni walks in sanguine as ever, like it's a practice match bro 💪",
+    difficulty: 2,
+  },
+  {
+    word: 'sagacious',
+    part_of_speech: 'adj.',
+    definition: 'having or showing keen mental discernment and good judgment; wise',
+    is_negative: false,
+    phonetic_hook: "Sa-GAY-shus — sounds like 'sage', which means a wise person",
+    reference_type: 'celebrity',
+    reference_name: 'Chandrababu Naidu',
+    reference_context: "Chandrababu Naidu's sagacious approach to governance — from building Hyderabad's IT corridor to planning Amaravati — shows a rare ability to think decades ahead.",
+    example_sentence: "CBN's sagacious move to attract IT companies in the 90s literally changed Hyderabad's destiny bro 🙌",
+    difficulty: 3,
+  },
+  {
+    word: 'recalcitrant',
+    part_of_speech: 'adj.',
+    definition: 'having an obstinately uncooperative attitude toward authority',
+    is_negative: true,
+    phonetic_hook: "Re-CAL-ci-trant — like someone who kicks back again and again when you try to control them",
+    reference_type: 'fictional',
+    reference_name: 'Pushpa',
+    reference_context: "Pushpa Raj is the definition of recalcitrant — every authority figure or police officer who tries to control him gets a defiant 'thaggede le' in response.",
+    example_sentence: 'That recalcitrant junior employee refused to follow the new process for 3 weeks straight bro 😤',
+    difficulty: 3,
+  },
+  {
+    word: 'voluble',
+    part_of_speech: 'adj.',
+    definition: 'speaking fluently and at great length; talking freely and at will',
+    is_negative: false,
+    phonetic_hook: "VOL-uble — 'volume' + able — someone with the volume always turned up, endlessly talking",
+    reference_type: 'celebrity',
+    reference_name: 'Jr NTR',
+    reference_context: 'Jr NTR is wonderfully voluble in interviews and award shows — speaking passionately for extended periods in Telugu, English, and Hindi with complete ease.',
+    example_sentence: "Tarak's voluble acceptance speech at Filmfare had everyone in tears bro, spoke for 20 minutes straight 🥹",
+    difficulty: 2,
+  },
 ]
 
-export async function GET(req: Request) {
-  const base = new URL(req.url).origin
+export async function GET() {
   const results: Array<{ word: string; status: string }> = []
 
-  for (const word of SEED_WORDS) {
-    try {
-      const res = await fetch(`${base}/api/generate-vocab`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ word }),
-      })
-      const text = await res.text()
-      let data: Record<string, string>
-      try { data = JSON.parse(text) } catch { data = { error: `non-JSON response (${res.status}): ${text.slice(0, 200)}` } }
-      results.push({ word, status: data.success ? 'created' : (data.message || data.error || 'unknown') })
-    } catch (err) {
-      results.push({ word, status: `failed: ${String(err)}` })
+  for (const entry of SEED_DATA) {
+    const { data: existing } = await supabaseAdmin
+      .from('vocab_words')
+      .select('id')
+      .eq('word', entry.word)
+      .single()
+
+    if (existing) {
+      results.push({ word: entry.word, status: 'already exists' })
+      continue
     }
+
+    const { error } = await supabaseAdmin.from('vocab_words').insert(entry)
+    results.push({ word: entry.word, status: error ? `error: ${error.message}` : 'created' })
   }
 
   return NextResponse.json({ done: true, results })
